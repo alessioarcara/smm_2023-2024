@@ -1,0 +1,87 @@
+\documentclass{article}
+\input{settings.tex}
+
+\begin{document}
+\pagenumbering{gobble}
+
+\tableofcontents
+\clearpage
+
+\pagenumbering{arabic}
+\parindent 0pt
+
+\section{Linear Algebra Tools}
+This chapter introduces inner product to give geometric meaning to vectors and
+vector spaces, enabling calculations of length, distance, and angles.
+
+\begin{definition}[Symmetric Positive Definitive Matrix] 
+    A symmetric matrix $A\in \mathbb{R}^{n\times n}$ that satisfies
+    \begin{equation}\label{positive_definite_matrix}
+        \text{for every nonzero vector }x:x^TAx>0
+    \end{equation}    
+    is called \textbf{positive definite}. If only $\geq$ holds in
+    \ref{positive_definite_matrix}, then $A$ is called \textbf{positive
+    semidefinite}.
+\end{definition}
+These properties helps in identifying positive definite matrices without
+having to check the definition explicitly:
+\begin{enumerate}
+    \item The null space of $A$ contains only the null vector; 
+    \item The diagonal elements $a_{ii}$ of $A$ are positive; 
+    \item The eigenvalues of $A$ are positive.
+\end{enumerate}
+\subsection{Angles and Orthogonality}
+The angle $\omega$ between vectors $x$ and $y$ is computed as:
+$$\cos\omega=\frac{\langle x,y\rangle}{\lVert x\rVert_2 \lVert y\rVert_2}$$ 
+Here, $\langle x,y\rangle$ denotes the inner product between $x$ and $y$.
+
+This angle indicated the vectors' similarity in orientation. 
+\begin{definition}[Orthogonal vectors]
+    Two vectors are orthogonal if $\langle x,y \rangle=0$. If additionally
+    $\lVert x\rVert=1=\lVert y\rVert$, then $x$ and $y$ are orthonormal.
+\end{definition}
+\begin{definition}[Orthogonal matrix]
+    A square matrix is an orthogonal matrix if and only if \underline{its columns are
+    orthonormal} so that 
+    $$AA^T=I=A^TA$$
+    which implies that 
+    $$A^{-1}=A^T$$
+\end{definition}
+The length of a vector $x$ is not changed when transforming it using an
+orthogonal matrix $A$.
+$$\lVert Ax\rVert_2^2=\lVert x\rVert_2^2$$
+Moreover, the angle between any two vectors $x,y$ is also unchanged when
+transforming both of them using an orthogonal matrix $A$.
+\begin{definition}[Orthonormal Basis]
+    In an $n$-dimensional vector space $V$ with a basis set
+    $\{b_1,\ldots,b_n\}$, if all the basis vectors are orthogonal to each
+    other, the basis is called as an \textbf{orthogonal basis}.
+    Additionally, if the length of each basis vector is 1, the basis is
+    referred to as an \textbf{orthonormal basis}.
+\end{definition}
+We can also have vector spaces that are orthogonal to each other. Given a
+vector space $V$ of dimension $D$, let's  consider a subspace $U$ of dimension
+$M$ such that $U\subseteq V$. Then its \textbf{orthogonal complement}
+$U^{\perp}$ is a $D-M$ dimensional subspace $V$ and contains all vectors in
+$V$ that are orthogonal to every vector in $U$.
+\begin{center}
+    \includegraphics[width=0.6\linewidth]{images/orthogonal_complement}
+\end{center}
+\subsubsection{Orthogonal Projections}
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+  & \( F_1 \) & \( f_2 \) & \( \cdots \) & \( f_n \) \\
+\hline
+    \( i_1 \) & $\star$ & $\star$ & $\cdots$ & $\star$ \\
+\hline
+    \( i_2 \) & $\star$ & $\ddots$ &  & $\vdots$ \\
+\hline
+    \( \vdots \)  & $\vdots$ &  &  & \\ 
+\hline
+    \( i_m \) & $\star$ & $\cdots$ &  & $\star$ \\
+\hline
+\end{tabular}
+\end{table}
+\end{document}

@@ -1,0 +1,28 @@
+
+% --- Layout e formattazione generale ---
+\usepackage[a4paper, landscape, twocolumn, margin=1.5cm, columnsep=1cm]{geometry}
+
+% --- Matematica ---
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\numberwithin{equation}{section}
+\usepackage{mdframed}
+
+% --- Teoremi, definizioni e ambienti ---
+\renewcommand\qedsymbol{$\blacksquare$}
+\newtheorem*{definition}{\color{red}\textbf{Definition}}
+\newtheorem*{theorem}{\color{green}\textbf{Theorem}}
+\newmdenv[%
+    backgroundcolor=lightgray,
+    frametitlebackgroundcolor=gray,
+    hidealllines=true,
+    frametitlefont=\sffamily\bfseries\color{white},
+    frametitle={Example},
+]{example}
+
+% --- Grafica e disegni ---
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
