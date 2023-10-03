@@ -321,3 +321,6 @@ TSWLatexianTemp*
 
 # glossaries
 *.glstex
+
+### Csv ###
+*.csv
