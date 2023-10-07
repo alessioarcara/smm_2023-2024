@@ -85,6 +85,7 @@ These matrices exhibit the property that $P_{\pi}^2=P_{\pi}$.
 
 The projection $\pi_U(x)$ of a vector $x\in \mathbb{R}^n$ onto a subspace $U$
 is the closest point necessarily in $U$ to $x$.
+\cleardoublepage
 \section{Matrix Decompositions}
 \subsection{Eigenvalues and Eigenvectors}
 Eigenanalysis helps us understand linear transformations represented by a
@@ -132,4 +133,115 @@ can have multiple eigenvectors.
 \end{theorem}
 This theorem states that eigenvectors of a matrix with $n$ distinct eigenvalues
 form a basis of $\mathbb{R}^n$.
+\cleardoublepage
+\section{Vector calculus}
+Firstly, we'll explore partial derivatives and gradients, focusing on functions that take a vector as input and produce a
+single real number as output. These functions are formally represented as
+$f:\mathbb{R}^n\to \mathbb{R}$.
+
+Subsequently, we will extend these ideas to functions that not only take a
+vector as input but also produce a vector as output. These functions can be
+written as $f:\mathbb{R}^n\to \mathbb{R}^m$.
+
+When we deal with a function that depends on multiple variables, such as 
+$f(x)=f(x_1,x_2)$, we use the \textbf{gradient} to represent its derivative.
+The gradient is a vector composed of \textbf{partial derivates} of the
+function. To compute each partial derivates, we differentiate the function
+with respect to one variable while keeping all other variables constant.
+
+$$\nabla_x f=\begin{bmatrix}
+    \frac{\partial{f}}{\partial{x_1}} &
+    \frac{\partial{f}}{\partial{x_2}} & \cdots &
+    \frac{\partial{f}}{\partial{x_n}}
+\end{bmatrix}\in \mathbb{R}^{1\times n}$$
+where $n$ is the number of variables.
+\paragraph{Basic Rules of Partial Differentiation}
+\begin{itemize}
+    \item[] Product rule:
+        $$\frac{\partial}{\partial{x}}(f(x)g(x))=\frac{\partial{f}}{\partial{x}}g(x)+f(x)\frac{\partial{g}}{\partial{x}}$$
+    \item[] Sum rule:
+        $$\frac{\partial}{\partial{x}}(f(x)+g(x))=\frac{\partial{f}}{\partial{x}}+\frac{\partial{g}}{\partial{x}}$$
+    \item [] Chain rule:
+        $$\frac{\partial}{\partial{x}}(g\circ
+        f)(x)=\frac{\partial}{\partial{x}}\left(g(f(x))\right)=\frac{\partial{g}}{\partial{f}}\frac{\partial{f}}{\partial{x}}$$
+\end{itemize}
+
+In the context of the chain rule, consider $f$ as implicitly a composition
+$f\circ g$.
+
+If a function $f(x_1,x_2)$ is a function of $x_1$ and $x_2$, where
+$x_1(t)$ and $x_2(t)$ are themselves functions of a single variable $t$, the
+chain rule yields the partial derivates
+$$\frac{\text{d}f}{\text{d}t}=\begin{bmatrix}
+    \frac{\partial{f}}{\partial{x_1}} & \frac{\partial{f}}{\partial{x_2}}
+    \end{bmatrix}\begin{bmatrix}
+    \frac{\partial{x_1(t)}}{\partial{t}} \\ 
+    \frac{\partial{x_2(t)}}{\partial{t}}
+\end{bmatrix}=\frac{\partial{f}}{\partial{x_1}}\frac{\partial{x_1}}{\partial{t}}+\frac{\partial{t}}{\partial{x_2}}\frac{\partial{x_2}}{\partial{t}}$$
+\newpage
+\begin{example}
+    Consider $f(x_1,x_2)=x_1^2+2x_2$, where $x_1=\sin t$ and $x_2=\cos t$,
+    then
+    $$\text{with}\quad\frac{\partial{f}}{\partial{x_1}}=2x_1,\quad \frac{\partial{f}}{\partial{x_2}}=2$$
+    $$\begin{aligned}
+        \frac{\text{d}f}{\text{d}t}&=2\sin t \frac{\partial{\sin t}}{\partial{t}}+2 \frac{\partial{\cos
+        t}}{\partial t}\\
+            &=2\sin t\cos t-2\sin t
+    \end{aligned}$$
+\end{example}
+If a function $f(x_1,x_2)$ is a function of $x_1$ and $x_2$, where $x_1(s,t)$
+and $x_2(s,t)$ are themselves functions of two variables $s$ and $t$, the
+chain rule yields the partial derivates
+$$
+\frac{\text{d}f}{\text{d}(s,t)}=\begin{bmatrix}
+    \frac{\partial{f}}{\partial{s}} & \frac{\partial{f}}{\partial{t}}
+\end{bmatrix} 
+$$
+where 
+$$
+\begin{aligned}
+    \frac{\partial{f}}{\partial{s}}&=\frac{\partial{f}}{\partial{x_1}}\frac{\partial{x_1}}{\partial{{\color{red}s}}}+\frac{\partial{f}}{\partial{x_2}}\frac{\partial{x_2}}{\partial{{\color{red}s}}}\\
+    \frac{\partial{f}}{\partial{t}}&=\frac{\partial{f}}{\partial{x_1}}\frac{\partial{x_1}}{\partial{{\color{blue}t}}}+\frac{\partial{f}}{\partial{x_2}}\frac{\partial{x_2}}{\partial{{\color{blue}t}}}\\
+\end{aligned}
+$$
+Another way to obtain these two partial derivatives is to represent the
+previous formula as a row vector containing the partial derivatives of $f$
+with respect to $x_1$ and $x_2$. This row vector is then multiplied by a
+matrix composed of the partial derivatives of $x_1$ and $x_2$ with respect to
+$s$ and $t$. When you perform this multiplication, you get the exact same
+result as above.
+$$
+\begin{bmatrix}
+    \frac{\partial{f}}{\partial{s}} & \frac{\partial{f}}{\partial{t}}
+\end{bmatrix}=\begin{bmatrix}
+    \frac{\partial{f}}{\color{red}\partial{x_1}} &
+    \frac{\partial{f}}{\color{blue}\partial{x_2}}
+\end{bmatrix}\begin{bmatrix}
+    {\color{red}\frac{\partial{x_1}}{\partial{s}}} &
+    {\color{red}\frac{\partial{x_1}}{\partial{t}}} \\ 
+    {\color{blue}\frac{\partial{x_2}}{\partial{s}}} &
+    {\color{blue}\frac{\partial{x_2}}{\partial{t}}}
+\end{bmatrix}$$
+\newpage
+\begin{example}
+    Given the following functions:\\
+    $g:\mathbb{R}^2\to \mathbb{R}^2\quad g(s,t)=(\sin(t)s, \cos(s)t)$\\ 
+    $f:\mathbb{R}^2\to \mathbb{R}\quad f(x_1,x_2)=x_1^2+2x_2$\\ 
+    $f\circ g: \mathbb{R}^2\to \mathbb{R}$\\
+    Compute $\nabla_{(s,t)}(f\circ g)$ and evaluate $\nabla_{(s,t)}(f\circ g)(0,0)$.
+    $$
+    \begin{aligned}
+        &=\begin{bmatrix}
+            2s\sin(t) & 2
+            \end{bmatrix}\begin{bmatrix}
+            \sin(t) & s\cos(t)\\ 
+            -t\sin(s) & \cos(s)
+        \end{bmatrix} \\ 
+        &=\begin{bmatrix}
+            2s\sin^2(t)-2t\sin(s) \\ 
+            2s^2\sin(t)\cos(t)+2\cos{t}
+        \end{bmatrix}=(0,2)
+    \end{aligned}
+    $$
+\end{example}
 \end{document}
