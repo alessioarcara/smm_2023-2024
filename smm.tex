@@ -143,17 +143,19 @@ Subsequently, we will extend these ideas to functions that not only take a
 vector as input but also produce a vector as output. These functions can be
 written as $f:\mathbb{R}^n\to \mathbb{R}^m$.
 
+\subsection{Gradients of Real-Valued Functions}
 When we deal with a function that depends on multiple variables, such as 
 $f(x)=f(x_1,x_2)$, we use the \textbf{gradient} to represent its derivative.
 The gradient is a vector composed of \textbf{partial derivates} of the
 function. To compute each partial derivates, we differentiate the function
 with respect to one variable while keeping all other variables constant.
-
-$$\nabla_x f=\begin{bmatrix}
-    \frac{\partial{f}}{\partial{x_1}} &
-    \frac{\partial{f}}{\partial{x_2}} & \cdots &
-    \frac{\partial{f}}{\partial{x_n}}
-\end{bmatrix}\in \mathbb{R}^{1\times n}$$
+\begin{equation}\label{eq:gradient_real_valued_functions}
+   \nabla_x f=\begin{bmatrix}
+       \frac{\partial{f}}{\partial{x_1}} &
+       \frac{\partial{f}}{\partial{x_2}} & \cdots &
+       \frac{\partial{f}}{\partial{x_n}}
+    \end{bmatrix}\in \mathbb{R}^{1\times n} 
+\end{equation}
 where $n$ is the number of variables.
 \paragraph{Basic Rules of Partial Differentiation}
 \begin{itemize}
@@ -233,7 +235,8 @@ $$
     \begin{aligned}
         &=\begin{bmatrix}
             2s\sin(t) & 2
-            \end{bmatrix}\begin{bmatrix}
+        \end{bmatrix}
+        \begin{bmatrix}
             \sin(t) & s\cos(t)\\ 
             -t\sin(s) & \cos(s)
         \end{bmatrix} \\ 
@@ -244,4 +247,209 @@ $$
     \end{aligned}
     $$
 \end{example}
+\subsection{Gradients of Vector-Valued Functions}
+We can express a vector-valued function $f:\mathbb{R}^n\to \mathbb{R}^m$ as a
+column vector of $m$ real-valued functions $f_i:\mathbb{R}^n\to \mathbb{R}$.
+Given an input vector $x=\begin{bmatrix} x_1,\ldots,x_n \end{bmatrix}^T\in
+\mathbb{R}^n$, the output is defined as: 
+$$
+f(x)=\begin{bmatrix} f_1(x)\\
+\vdots \\ f_m(x) \end{bmatrix}\in \mathbb{R}^m
+$$
+\begin{definition}[Jacobian]
+    By contrast, in Equation \ref{eq:gradient_real_valued_functions}, each partial
+    derivative $\frac{\partial f}{\partial x_i}$ is a column vector.
+    $$
+    \begin{aligned}
+        J=\nabla_x f&=\begin{bmatrix}
+            \frac{\partial{f}}{\partial{x_1}} & \cdots &
+            \frac{\partial{f}}{\partial{x_n}}
+        \end{bmatrix} \\ 
+                  &=\begin{bmatrix}
+                      \frac{\partial{f_1}}{\partial{x_1}} & \cdots &
+                      \frac{\partial{f_1}}{\partial{x_n}} \\ 
+                      \vdots & & \vdots \\ 
+                      \frac{\partial{f_m}}{\partial{x_1}} & \cdots &
+                      \frac{\partial{f_m}}{\partial{x_n}} \\ 
+                  \end{bmatrix}\\
+            J(i,j)&=\frac{\partial f_i}{\partial{x_j}}
+    \end{aligned}
+    $$
+    The collection of all first-order partial derivatives of a vector-valued
+    function $f:\mathbb{R}^n\to \mathbb{R}^m$ is called the \textbf{Jacobian}.
+    The Jacobian $J$ is an $m\times n$ matrix.
+\end{definition}
+\newpage
+\begin{example}
+    $f:\mathbb{R}^2\to \mathbb{R}^3,\quad f:(x_1,x_2)=\begin{pmatrix}
+        x_1+x_2 \\ 
+        2x_1^2-x_2 \\ 
+        -x_1x_2
+    \end{pmatrix}$\\ 
+    $J(f):\mathbb{R}^2\to \mathbb{R}^{3\times 2},\quad J(i,j)=\begin{bmatrix}
+        1 & 1 \\ 
+        4x_1 & -1 \\ 
+        -x_2 & -x_1 
+    \end{bmatrix},\quad
+    J(1,1)=\begin{bmatrix}
+        1 & 1 \\ 
+        4 & -1 \\ 
+        -1 & -1
+    \end{bmatrix}$
+\end{example}
+\begin{example}
+   Let us consider the linear model 
+   $$y=\Phi\theta$$
+   where $\theta\in \mathbb{R}^D$ is a parameter vector, $\Phi\in
+   \mathbb{R}^{N\times D}$ are input features, and $y\in \mathbb{R}^N$ are the
+   corresponding observations. We define the functions 
+   $$\begin{aligned}
+       e:\mathbb{R}^D\to \mathbb{R}^N,\quad e(\theta)&=y-\Phi\theta \\
+       L:\mathbb{R}^N\to \mathbb{R},\quad L(e)&=\lVert e\rVert_2^2, \quad
+       L(\theta)= \lVert y-\Phi\theta\rVert_2^2
+   \end{aligned}$$
+   This is called a \textbf{least-squares loss} function.\\ We want to find
+   $\frac{\partial{L}}{\partial{\theta}}$, which is derivative of the loss
+   function with respect to the parameters $\theta$. This will allow us to
+   find the optimal $\theta$ that minimizes the loss function $L(\theta)$.
+
+   The chain rule allows us to compute the gradient as 
+   $$\frac{\partial{L}}{\partial{e}}={\color{red}\frac{\partial{L}}{\partial{e}}}{\color{blue}\frac{\partial{e}}{\partial{\theta}}}$$
+   We know that $\lVert e\rVert_2^2=e^Te$ and so 
+   $${\color{red}\frac{\partial{L}}{\partial{e}}=2e^T}\in \mathbb{R}^{1\times
+   N}$$
+   Furthermore, we obtain 
+   $${\color{blue}\frac{\partial{e}}{\partial{\theta}}=-\Phi}\in
+   \mathbb{R}^{N\times D}$$
+   such that our desired derivative is
+   $$
+   \nabla{L}_{\theta}=-2e^T\Phi=-2\underbrace{\color{red}(y^T-\theta^T\Phi^T)}_{1\times
+   N}\underbrace{\color{blue}\Phi}_{N\times D}\in \mathbb{R}^{1\times D}\\ 
+   $$
+\end{example}
+\subsection{Backpropagation and Automatic Differentiation}
+In machine learning, finding optimal model parameters often involves
+performing gradient descent. This requires computing the gradient of a
+learning objective with respect to the model's parameters. Calculating the
+gradient explicitly can be impractical due to the complexity and length of the
+resulting derivative equations. To address this, the \textbf{backpropagation} algorithm
+was introduced in 1962 as an efficient way to compute these gradients,
+particularly for neural networks.
+
+
+
+In neural networks, the output $y$ is computed through a multi-layered
+function composition $y=(f_K\circ f_{K-1}\circ \cdots f_1)(x)$. Here, $x$ are
+the inputs (e.g., images), $y$ are the observations (e.g., class labels).
+Each functions $f_i,i=1,\ldots,K$, has its own parameters.
+Specifically, in the $i^{th}$ layer, the function is given
+$f_i(x_{i-1})=\sigma(A_{i-1}+b_{i-1})$, where $x_{i-1}$ is
+the output from layer $i-1$ and $\sigma$ is an activation function. 
+\begin{center}
+    \includegraphics[width=\linewidth]{nn_forward_pass}
+\end{center}
+In order to train a neural network, we aim to minimize a loss function $L$
+with respect to all parameters $A_j,b_j$ for $j=0,\ldots,K-1$.
+Specifically, we're interested in optimizing these parameters to minimize the
+squared loss given by
+$$L(\theta)=\lVert y-f_K(\theta,x)\rVert^2$$
+where $\theta=\{A_0, b_0, \ldots,A_{K-1},b_{K-1}\}$.
+
+To minimize $L(\theta)$ we need to compute its gradients of $L$ to the
+parameter set $\theta$. This involes calculating the partial derivatives of
+$L$ with respect to the parameters $\theta_j=\left\{A_j,b_j\right\}$ for each
+layer $j=0,\ldots,K-1$. The chain rule allows us to determine the partial
+derivatives as
+$$\begin{aligned}
+    \frac{\partial{L}}{\partial{\theta_{K-1}}}&=\frac{\partial{L}}{\partial{f_K}}{\color{blue}\frac{\partial{f_K}}{\partial{\theta_{K-1}}}}
+    \\
+    \frac{\partial{L}}{\partial{\theta_{K-2}}}&=\frac{\partial{L}}{\partial{f_K}}\boxed{{\color{red}\frac{\partial{f_K}}{\partial{f_{K-1}}}}{\color{blue}\frac{\partial{f_{K-1}}}{\partial{\theta_{K-2}}}}}
+    \\
+    \frac{\partial{L}}{\partial{\theta_{K-3}}}&=\frac{\partial{L}}{\partial{f_K}}{\color{red}\frac{\partial{f_K}}{\partial{f_{K-1}}}}\boxed{{\color{red}\frac{\partial{f_{K-1}}}{\partial{f_{K-2}}}}{\color{blue}\frac{\partial{f_{K-2}}}{\partial{\theta_{K-3}}}}}
+    \\
+    \frac{\partial{L}}{\partial{\theta_{i}}}&=\frac{\partial{L}}{\partial{f_K}}{\color{red}\frac{\partial{f_K}}{\partial{f_{K-1}}}\cdots}\boxed{{\color{red}\frac{\partial{f_{i+2}}}{\partial{f_{i+1}}}}{\color{blue}\frac{\partial{f_{i+1}}}{\partial{\theta_{i}}}}}
+\end{aligned}$$
+The {\color{red}red} terms are partial derivatives of the output of a layer
+with respect to its inputs, whereas the {\color{blue}blue} terms are partial
+derivatives of the output of a layer with respect to its parameters. 
+
+The key insight of backpropagation is to reuse previously computed derivatives
+to avoid redundant calculations. When we've computed the partial derivatives
+$\frac{\partial{L}}{\partial{\theta_{i+1}}}$, we can reuse them to efficiently
+calculate the partial derivatives
+$\frac{\partial{L}}{\partial{\theta}_{i}}$.
+
+It turns out that backpropagation is a special case of a set of techniques
+known as \textbf{automatic differentiation}. Automatic differentiation
+numerically evaluate the exact (up to machine precision) gradient of a function by working with
+intermediate variables and applying the chain rule.
+
+\begin{center}
+    \includegraphics[width=\linewidth]{nn_backward_pass}
+\end{center}
+\begin{example}
+    Consider the real-valued function 
+    $$f(x)=\sqrt{x^2+\exp(x^2)}+\cos(x^2+\exp(x^2))$$
+    Another way to attach this would be to just define some \textit{intermediate
+    variables}. Say 
+    $$
+    \begin{aligned}
+        a=x^2\\
+        b=\exp(a)\\ 
+        c=a+b\\ 
+        d=\sqrt{c}\\ 
+        e=\cos(c)\\ 
+        f=d+e
+    \end{aligned}
+    $$
+    The set of equations that include intermediate variables can be thought of
+    as a computational graph 
+    \begin{center}
+        \includegraphics[width=\linewidth]{nn_backpropagation}
+    \end{center}
+    By looking at the computation graph, we can compute
+    $\frac{\partial{f}}{\partial{x}}$ by working backward from the end of the
+    graph and obtain the derivative of each variable, making the use of the
+    derivatives of the children of that variable
+    $$\begin{aligned}
+        \frac{\partial{f}}{\partial{d}}=\frac{\partial{f}}{\partial{e}}=1 \\
+        \frac{\partial{f}}{\partial{c}}=\frac{\partial{f}}{\partial{d}}\frac{\partial{d}}{\partial{c}}+\frac{\partial{f}}{\partial{e}}\frac{\partial{e}}{\partial{c}}
+        \\ 
+        \frac{\partial{f}}{\partial{b}}=\frac{\partial{f}}{\partial{c}}\frac{\partial{c}}{\partial{b}}
+        \\
+        \frac{\partial{f}}{\partial{a}}=\frac{\partial{f}}{\partial{b}}\frac{\partial{b}}{\partial{a}}+\frac{\partial{f}}{\partial{c}}\frac{\partial{c}}{\partial{a}}
+        \\ 
+        \frac{\partial{f}}{\partial{x}}=\frac{\partial{f}}{\partial{a}}\frac{\partial{a}}{\partial{x}}
+    \end{aligned}$$
+    We observe that the computation required for calculating the derivative is
+    of similar complexity as the computation of the function itself (forward
+    pass).
+\end{example}
+Automatic differentiation is a formalization of last Example. Let
+$x_1,\ldots,x_d$ be the input variables to the function,
+$x_{d+1},\ldots,x_{D-1}$ be the intermediate variables, and $x_D$ the output
+variable. Then the computation graph can be expressed as follows:
+\begin{equation}\label{eq:forward_pass}
+    \text{For }i=d+1,\ldots,D:\quad x_i=g_i(x_{Pa}(x_i))
+\end{equation}
+where the $g_i(\cdot)$ are elementary functions and $x_{Pa}(x_i)$ are the
+parent nodes of the variable $x_i$ in the graph.
+
+Recall that by definition $f=x_D$ and hence
+$$\frac{\partial{f}}{\partial{x_D}}=1$$
+For other variables $x_i$, we apply the chain rule 
+\begin{equation}\label{eq:backward_pass}
+    \frac{\partial{f}}{\partial{x_i}}=\displaystyle\sum_{x_j:x_i\in
+    Pa(x_j)}\frac{\partial{f}}{\partial{x_j}}\frac{\partial{x_j}}{\partial{x_i}}=\displaystyle\sum_{x_j:x_i\in
+    Pa(x_j)}\frac{\partial{f}}{\partial{x_j}}\frac{\partial{g_j}}{\partial{x_i}}
+\end{equation}
+where $Pa(x_j)$ is the set of parent nodes of $x_j$ in the computation graph.
+Equation \ref{eq:forward_pass} is the \underline{forward pass}, whereas
+\ref{eq:backward_pass} is the \underline{backward pass}.
+
+The automatic differentiation approach works whenever we have a function that
+can be expressed as a computation graph, where the elementary functions are
+differentiable. 
+\cleardoublepage
+\section{Continuous Optimization}
 \end{document}
