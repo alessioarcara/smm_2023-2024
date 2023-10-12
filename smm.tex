@@ -452,4 +452,55 @@ can be expressed as a computation graph, where the elementary functions are
 differentiable. 
 \cleardoublepage
 \section{Continuous Optimization}
+Training a machine learning essentially involves identifying a good set of
+parameters. What constitutes ``good'' is defined by the objective function.
+Optimization algorithms are employed to locate the best possible value of this
+function. Typically, the aim is to minimize the objective function, implying
+that the best value is the minimum one.
+
+\begin{figure}[!h]
+   \centering
+   \includegraphics[width=0.25\linewidth]{argmin_argmax}
+   \caption{$\underset{x\in \mathbb{R}^N}\argmax\
+   f(x)=\underset{x\in\mathbb{R}^N}\argmin\ {f(x)}$}
+\end{figure}
+
+We will assume in this chapter that our objective function is
+differentiable, hence we have access to a gradient to help us find the
+optimal value. Intuitively, finding the best value is like finding the valleys
+of the objective function, and the gradients point us uphill. The idea is to
+move downhill (opposite to the gradient) and hope to find the deepest point.
+\subsection{Conditions for the existence of the minimum} 
+\begin{definition}
+    A $f:\mathbb{R}^n\to \mathbb{R}$ is continuous and differentiable if
+    the partial derivates $\frac{\partial{f}}{\partial{x_i}},i=1,\ldots,N$
+    exist and are continuous. 
+\end{definition}
+\begin{definition}
+    $x^*\in \mathbb{R}^N$ is a (strict) \textbf{local minimum} for $f$ if 
+    $$f(x^*)(<)\leq f(x)\quad \forall x: \lVert x-x^*\rVert<\epsilon$$
+\end{definition}
+\begin{definition}
+    $x^*\in \mathbb{R}^N$ is a (strict) \textbf{global minimum} for $f$ if 
+    $$f(x^*)(<)\leq f(x)\quad \forall x\in \mathbb{R}^N$$
+\end{definition}
+\begin{center}
+    \includegraphics[width=0.75\linewidth]{local_global_minimum}
+\end{center}
+\subsubsection{Optimality Conditions}
+\begin{definition}[First order conditions]
+    If $x^*$ is a minimum point of $f$, then $\nabla f(x^*)=0$. Furthermore,
+    if $\nabla f(x^*)=0$ for $x^*\in \mathbb{R}^N$, then $x^*$ can be either a
+    (local) minimum, a (local) maximum or a saddle point of $f(x)$.
+\end{definition}
+Consequently, we want to find a point $x^*\in \mathbb{R}^N$ such that $\nabla
+f(x^*)=0$. Those points are stationary points for $f$.
+\begin{center}
+    \includegraphics[width=\linewidth]{min_max_saddle}
+\end{center}
+\begin{definition}[Second order conditions]
+    if $f$ is twice differentiable and if $\nabla f(x^*)=0$ and t
+    
+\end{definition}
+\subsection{Algorithm to compute the minimum}
 \end{document}
