@@ -461,46 +461,257 @@ that the best value is the minimum one.
 \begin{figure}[!h]
    \centering
    \includegraphics[width=0.25\linewidth]{argmin_argmax}
-   \caption{$\underset{x\in \mathbb{R}^N}\argmax\
-   f(x)=\underset{x\in\mathbb{R}^N}\argmin\ {f(x)}$}
+   \caption{$\underset{x\in \mathbb{R}^n}\argmax\
+   f(x)=\underset{x\in\mathbb{R}^n}\argmin\ {-f(x)}$}
 \end{figure}
 
-We will assume in this chapter that our objective function is
-differentiable, hence we have access to a gradient to help us find the
-optimal value. Intuitively, finding the best value is like finding the valleys
-of the objective function, and the gradients point us uphill. The idea is to
-move downhill (opposite to the gradient) and hope to find the deepest point.
+We will assume in this chapter that our objective function $f:\mathbb{R}^n\to
+\mathbb{R}$ is differentiable, hence we have access to a gradient to help us
+find the optimal value. Intuitively, finding the best value is like finding
+the valleys of the objective function, and the gradients point us uphill. The
+idea is to move downhill (opposite to the gradient) and hope to find the
+deepest point.
 \subsection{Conditions for the existence of the minimum} 
 \begin{definition}
-    A $f:\mathbb{R}^n\to \mathbb{R}$ is continuous and differentiable if
-    the partial derivates $\frac{\partial{f}}{\partial{x_i}},i=1,\ldots,N$
-    exist and are continuous. 
+    $f$ is differentiable if the partial derivates
+    $\frac{\partial{f}}{\partial{x_i}},i=1,\ldots,n$ exist and are continuous. 
 \end{definition}
 \begin{definition}
-    $x^*\in \mathbb{R}^N$ is a (strict) \textbf{local minimum} for $f$ if 
+    $x^*\in \mathbb{R}^n$ is a (strict) \textbf{local minimum} of $f$ if there
+    exists $\epsilon>0$ such that:
     $$f(x^*)(<)\leq f(x)\quad \forall x: \lVert x-x^*\rVert<\epsilon$$
 \end{definition}
 \begin{definition}
-    $x^*\in \mathbb{R}^N$ is a (strict) \textbf{global minimum} for $f$ if 
-    $$f(x^*)(<)\leq f(x)\quad \forall x\in \mathbb{R}^N$$
+    $x^*\in \mathbb{R}^n$ is a (strict) \textbf{global minimum} of $f$ if 
+    $$f(x^*)(<)\leq f(x)\quad \forall x\in\mathbb{R}^N$$
 \end{definition}
 \begin{center}
     \includegraphics[width=0.75\linewidth]{local_global_minimum}
 \end{center}
-\subsubsection{Optimality Conditions}
 \begin{definition}[First order conditions]
     If $x^*$ is a minimum point of $f$, then $\nabla f(x^*)=0$. Furthermore,
-    if $\nabla f(x^*)=0$ for $x^*\in \mathbb{R}^N$, then $x^*$ can be either a
+    if $\nabla f(x^*)=0$ for $x^*\in \mathbb{R}^n$, then $x^*$ can be either a
     (local) minimum, a (local) maximum or a saddle point of $f(x)$.
 \end{definition}
-Consequently, we want to find a point $x^*\in \mathbb{R}^N$ such that $\nabla
+Consequently, we want to find a point $x^*\in \mathbb{R}^n$ such that $\nabla
 f(x^*)=0$. Those points are stationary points for $f$.
 \begin{center}
     \includegraphics[width=\linewidth]{min_max_saddle}
 \end{center}
 \begin{definition}[Second order conditions]
-    if $f$ is twice differentiable and if $\nabla f(x^*)=0$ and t
-    
+    if $f$ is twice differentiable and if $\nabla f(x^*)=0$ and
+    $\nabla^2f(x^*)$ (the hessian of $f$) is positive definitive then $x^*$ is
+    a strict local minimum for $f$.
 \end{definition}
 \subsection{Algorithm to compute the minimum}
+
+\paragraph{Iterative methods.} Given an initial vector $x_0\in \mathbb{R}^n$,
+it is possible to approximate a solution to a given optimization problem by
+applying iterative methods. In particular, by using these methods, one can
+compute $x_{k+1}$ as follows:
+$$x_{k+1}=g(x_k)$$
+until convergence. In this case $g$ is an arbitrary function. Using these
+methods, $x_k\to x^*$ for $k\to\infty$, where $x^*$ is a stationary point.
+
+\paragraph{Descent methods} are iterative methods in which one can compute
+$x_{k+1}$ as follows:
+$$x_{k+1}=x_k+\alpha_kp_k$$
+where $p_k\in \mathbb{R}^n$ and $\alpha_k\in \mathbb{R}$.
+\begin{definition}
+    $p_k$ is called a \textbf{descent direction} for $f$ in $x$ if there
+    exists $\alpha_k>0$ such that:
+    $$f(x_k+\alpha_k p_k)<f(x_k)$$
+    In this case:
+    $$p_k^T\nabla f(x_k)<0\quad\text{if } p\neq0$$
+    In other words, descent direction is a direction that along that line
+    decreases the function.
+\end{definition}
+and $\alpha_k$ is a positive parameter called \textbf{step size} that measures
+the step along the direction $p_k$.
+
+The direction $p_k$ corresponds in the \textbf{gradient
+descent method} to $-\nabla f(x_k)$, thus
+$$x_{k+1}=x_k-\alpha_k\nabla f(x_k)$$
+The selection of $\alpha_k$ is crucial task for ensuring convergence to the
+minimum of a function. A step size that is too small can lead to excessively
+slow convergence, potentially never reaching the minimum, while a step size
+that is too large may cause bouncing around the minimum without ever
+converging to it.
+
+\begin{center}
+    \includegraphics[width=\linewidth]{gradient_step_size}
+\end{center}
+
+If $\alpha_k$ is chosen with the \textbf{backtracking procedure} (Armijo rule) then the
+algorithm converges to a stationary point of $f$. The idea is to start from
+an initial value for $\alpha_k$, and then reducing it as
+$\alpha_k=\phi\alpha_k$ with $\phi<1$ until the following condition is met:
+$$f(x_k-\alpha_k\nabla f(x_k))\leq f(x_k)-\sigma\alpha_k \lVert \nabla
+f(x_k)\rVert^2$$
+where $\sigma$ is typically 0.25 and lies in the range $(0,0.5)$. The typical value
+of $\phi$ is also 0.5.
+
+Since we cannot run infinite iterations (there exists a truncation error), a
+\textbf{stopping criteria} is needed:
+\begin{itemize}
+    \item We can use the property of $x^*$, where $\nabla f(x^*)=0$, to test
+        whether the approximation $x_k$ is close to the solution within a
+        specified tolerance. The criteria can be:
+        \begin{itemize}
+            \item \textbf{Absolute criterion}: $\lVert \nabla
+                f(x_k)\rVert<\tau_A$
+            \item \textbf{Relative criterion}: $\frac{\lVert \nabla
+                f(x_k)\rVert}{\lVert \nabla f(x_0)\rVert}<\tau_R$
+        \end{itemize}
+    \item We can set a maximum number, $k^*$, of iterations.
+    \item Additionally, as an heuristic, we stop when the norm of the gradient
+        starts to flatten.
+\end{itemize}
+\begin{verbatim}
+   input: f, x_0
+   while stopping criteria holds:
+        p_k = - grad(f(x_k))
+        a_k = backtrack_procedure
+        x_k = x_k + a_k * p_k
+        k = k + 1
+     output: x_k
+\end{verbatim}
+\paragraph{Initialization.} The initial point $x_0$ influences the
+local minimum that is found. It is usually chosen randomly within the range of
+$[-1,1]$ or $[0,1]$. Moreover, if $f(x)$ is convex, then every stationary
+point is a global minimum of $f(x)$ and the choice of $x_0$ isn't important.
+Otherwise when $f(x)$ isn't convex, we have to choose an initial point as
+closest as possible to the \textit{right} stationary point.
+
+\mbox{}
+
+The algorithm introduced doesn't always work well because of the following
+reasons:
+\begin{itemize}
+    \item If the objective function has flat areas or potholes on its loss
+        surface, the procedure might be too slow or lead to a poor solution.
+        Techniques such momentum, that inherit the rate of descent from
+        previous steps, are often able to navigate through local potholes and flat
+        regions. The idea is akin a stone rolling down a hill, gathering
+        speed as it rolls down.
+    \item If the components of the gradient have very different magnitudes,
+        this causes problems for gradient-descent methods. 
+    \item If the objective function has a steep region in its loss surface, the
+        descent direction within this area changes quickly. This rapid change
+        increase the likelihood of the divergence.
+    \item The objective function may present non-differentiable points,
+        which can create problems in calculating the gradient.
+\end{itemize}
+
+\subsection{Convex functions}
+
+A convex set is a set where, for any two points within the set, the line
+segment connecting these two points entirely lies within the set.
+
+\begin{center}
+    \includegraphics[width=0.65\linewidth]{convex_set}
+\end{center}
+
+\begin{definition}
+    Let $f:\Omega\subset \mathbb{R}^n\to \mathbb{R}$, where $\Omega$ is a
+    convex set. The function $f$ is (strictly) \textbf{convex} if, $\forall x,y\in\Omega$
+    and $\forall\theta:0\leq\theta\leq1$, the following inequality holds:
+    $$f(\theta x+(1-\theta)y) (<) \leq\theta f(x)+(1-\theta)f(y)$$
+\end{definition}
+In other words, the function of a point lying on the segment connecting $x$
+and $y$ is below the segment connecting $f(x)$ and $f(y)$.
+\begin{center}
+    \includegraphics[width=0.5\linewidth]{convex_function}
+\end{center}
+\subsubsection{Quadratic functions}
+An example of a strictly convex function is the quadratic function, which take the
+following form:
+$$f(x)=\frac{1}{2}x^TBx+c^Tx+(w)$$
+with $b,c\in \mathbb{R}^n$ and $A\in \mathbb{R}^{n\times n}$ symmetric
+positive definitive.
+
+A typical quadratic function is the least square:
+$$\lVert Ax-b\rVert^2$$
+\begin{proof}
+    \begin{equation*}
+        \begin{aligned}
+            \frac{1}{2}\lVert Ax-b\rVert^2 &=\frac{1}{2}(Ax-b)^T(Ax-b)\\ 
+                                &=\frac{1}{2}(x^TA^T-b^T)(Ax-b)\\
+                                &=\frac{1}{2}(x^TA^TAx-b^TAx-x^TA^Tb+b^Tb)\\ 
+                                &=\frac{1}{2}x^T\underbrace{A^TA}_{\color{blue}B}x\underbrace{-b^TA}_{\color{blue}c^T}x+\frac{1}{2}b^Tb
+        \end{aligned}
+    \end{equation*}
+    which is exactly the same as the above form.
+\end{proof}
+\subsubsection{Properties}
+\begin{enumerate}
+    \item If $f$ is convex, any point of local minimum is also a global
+        minimum. 
+    \item While a convex function can have multiple local minima, a strictly
+        convex function has only \underline{one} local minimum, which is also
+        a global minimum.
+        \begin{center}
+            \includegraphics[width=0.75\linewidth]{strictly_convex}
+        \end{center}
+    \item If $f$ is convex and \underline{differentiable} any stationary point
+        is a global minimum for $f$.
+\end{enumerate}
+\subsection{Variants of gradient descent algorithm}
+\begin{itemize}
+    \item Gradient descent with \textbf{momentum} method improves the
+        convergence of the gradient descent method by memorizing and
+        utilizing, at each step, what happened in the previous iteration. In
+        particular:
+        $$x_{k+1}=x_k-\alpha_k\nabla f(x_k)+\beta\Delta x_k$$
+        where $\beta\in[0,1]$ and $\Delta x_k=x_k-x_{k-1}$ is the update
+        obtained at iteration $k$.
+        This update smooths the gradient updates and, thus, reduces the
+        oscillations. This approach is analogous to a heavy ball in motion,
+        where the momentum term represents the ball's resistance to change
+        directions.
+        \begin{center}
+            \includegraphics[width=0.75\linewidth]{gradient_momentum}
+        \end{center}
+    \item In machine learning, we typically train models by finding the
+        optimal vector of parameters, denoted as $\theta$, that minimize a
+        loss function $L(\theta)$. We can see this loss functions as the
+        aggregate of individual losses $L_n$ incurred by each of the $N$ data
+        points in the training set. Thus, the loss function is expressed as:
+        $$L(\theta)=\sum_{n=1}^NL_n(\theta)$$
+        The gradient of such loss function is then computed as follows:
+        $$\nabla(\theta)=\sum_{n=1}^N\nabla L_n(\theta_k)$$
+        In gradient descent, the optimization is performed by using
+        the full training set and by updating the vectors of parameters
+        according to:
+        $$\theta_{k+1}=\theta_k-\alpha_k\sum_{n=1}^N(\nabla L_n(\theta_k))$$
+        Evaluating the sum gradient may require expensive evaluations of the
+        gradients from all individual functions $L_n$. If we consider the term
+        $\sum_{n=1}^N(\nabla L_N(\theta_k))$, we can reduce the amount of the
+        computation by taking a sum over a \underline{smaller set} of $L_n$.
+        \begin{itemize}
+            \item \textit{batch} $\to$ \underline{all} $L_n$ functions;
+            \item \textit{mini-batch} $\to$ randomly choose a
+                \underline{subset} of $L_n$
+                functions. This can be a single $L_n$ or more. Large
+                mini-batches lead to more stable convergence, but the
+                calculations will be more expensive. Small mini-batches are
+                quick to estimate, and the noise in gradient estimation might
+                help to escape from some bad local optima.
+        \end{itemize}
+        The technique is used by \textbf{stochastic gradient descent}. It
+        requires more iterations to converge, but with a small enough
+        $\alpha_k$, it almost surely converges to a local minimum. Why use it?
+        If there are constraints, such as memory limitations.
+
+        Moreover, with stochastic gradient descent, we speak about \textbf{epoch} and not
+        iterations. An epoch refers to the iterations necessary to ``see" all
+        the data.
+        $$\nabla L(\theta)=\nabla L_{n_1}(\theta)\quad i=1,\ n_1\in\{1\dots N\}$$
+        $$\nabla L(\theta)=\nabla L_{n_2}(\theta)\quad i=1,\ n_2\in\{1\dots
+        N\}\setminus\{n_1\}$$
+        The mini-batches do not repeat themselves before the entire epoch has
+        been completed.
+\end{itemize}
+\cleardoublepage
+\section{Probability and statistics}
 \end{document}
