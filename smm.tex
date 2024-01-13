@@ -706,12 +706,482 @@ $$\lVert Ax-b\rVert^2$$
         Moreover, with stochastic gradient descent, we speak about \textbf{epoch} and not
         iterations. An epoch refers to the iterations necessary to ``see" all
         the data.
-        $$\nabla L(\theta)=\nabla L_{n_1}(\theta)\quad i=1,\ n_1\in\{1\dots N\}$$
-        $$\nabla L(\theta)=\nabla L_{n_2}(\theta)\quad i=1,\ n_2\in\{1\dots
-        N\}\setminus\{n_1\}$$
+        \begin{equation*}
+            \begin{aligned}
+                \nabla L(\theta)&=\nabla L_{n_1}(\theta)\quad i=1,\
+                n_1\in\{1\dots N\}\\
+                \nabla L(\theta)&=\nabla L_{n_2}(\theta)\quad i=1,\ n_2\in\{1\dots
+                N\}\setminus\{n_1\}\\
+                \nabla L(\theta)&=\ldots
+            \end{aligned}
+        \end{equation*}
         The mini-batches do not repeat themselves before the entire epoch has
         been completed.
 \end{itemize}
 \cleardoublepage
-\section{Probability and statistics}
+\section{Probability and Statistics}
+Probability focuses on modeling processes using random variables to capture
+uncertainty. In contrast, statistics involves analyzing the observed data to
+deduce the underlying processes that explain those observations.
+\begin{definition}[State space $\Omega$]
+    Set of all the possible results of a random experiment.
+\end{definition}
+\begin{example}
+   Two coins 
+   $$\Omega=\{TT,HT,TH,HH\}$$
+\end{example}
+\begin{definition}[Event space $\mathcal{A}$]
+    A collection of results and $\mathcal{A}\subset\Omega$.
+\end{definition}
+\begin{definition}[Probability P]
+    The probability of an event $\mathcal{A}$ is a function
+    $P:A\to[0,1]\in
+    \mathbb{R}$ that associates at each event $A$ a number called probability
+    of $\mathcal{A}$.
+    $$P(A)=\frac{\#(A)}{\#(\Omega)}$$
+\end{definition}
+\begin{example}
+    $A\subset\Omega=\{TH,HT\}$
+    $$P(A)=\frac{2}{4}$$
+\end{example}
+\begin{definition}[Conditional probability]
+    The conditional probability of an event $B$ given the event $A$ is defined
+    as:
+    $$P(B|A)=\frac{P(A\cap B)}{P(A)}$$
+    with $P(A)>0$.
+\end{definition}
+\begin{example}
+    $A=\{\text{The first card is of seed heart}\}$ \\
+    $B=\{\text{The second card is of seed heart}\}$
+    $$
+    \begin{aligned}
+        P(A)&=\frac{13}{52}=\frac{1}{4}\\
+        P(B|A)&=\frac{12}{51}
+    \end{aligned}
+    $$
+    $A$ and $B$ are events dependent.
+\end{example}
+\begin{example}
+   Toss a coin three times\\
+   $\Omega=\{TTT,TTH,THT,HTT,HHT,HTH,THH,HHH\}$\\ 
+   $A=\{\text{two }T\}$
+   $B=\{\text{one } H\text{ and one }T\}$\\
+   $P(A)=\frac{4}{8}\quad P(B)=\frac{6}{8}=\frac{3}{4}$\\
+   $A\cap B=\{TTH,THT,HTT\}$
+   $$P(A|B)=\frac{\frac{3}{8}}{\frac{3}{4}}=\frac{3}{8}\frac{4}{3}=\frac{1}{2}$$
+   $$P(B|A)=\frac{\frac{3}{8}}{\frac{1}{2}}=\frac{3}{4}$$
+\end{example}
+\begin{definition}
+    Two events $A$ and $B$ are \underline{independent events} if and only if:
+    $$P(A\cap B)=P(A)\cdot P(B)$$
+    and that means
+    $$P(A|B)=P(A)\quad P(B|A)=P(B)$$
+    That can be extended to multiple events. In fact, if
+    $$P(A_1\cap A_2\ldots \cap A_n)=\prod_{i=1}^nP(A_i)$$
+    then $A_1,A_2\ldots A_n$ are independent events.
+\end{definition}
+\subsection{Random variables}
+\begin{definition}[Random variable]
+    A random variable is a function $X:\Omega\to \mathbb{R}$ which associates
+    each result $\omega\in\Omega$ to a number $x\in \mathbb{R}$.
+\end{definition}
+\begin{definition}
+    We refer to $\mathcal{T}$ as the \textbf{target space of $X$} or
+    \textbf{support of $X$} that is the set of all possible values of a random
+    variable $X$.
+    $$\{x|x=X(\omega),\quad\omega\in \mathbb{R}\}$$
+\end{definition}
+A random variable is:
+\begin{itemize}
+    \item \textbf{Discrete} if $\mathcal{T}$ is constituted by a
+        \underline{countable} set of elements.
+    \item \textbf{Continue} if $\mathcal{T}$ is an interval or an union of
+       intervals of \underline{real} numbers. 
+\end{itemize}
+\clearpage
+\begin{example}
+   Toss a coin twice\\ 
+   $\Omega=\{TT,TH,HT,HH\}$\\
+   $X\underset{\omega\in\Omega}{(\omega)}=\{\text{number of }H\}$\\
+   $X(TT)=0\ X(TH)=1,\ X(HT)=1,\ X(HH)=2$
+   $$\mathcal{T}=\{0,1,2\}$$
+   $X$ is discrete r.v.
+\end{example}
+\begin{example}
+   Roll a die more times until we get 6\\ 
+   $\Omega=\{n_1,n_2\ldots6\}$ $n_i=\{1,\ldots5\}$\\ 
+   $Y=\{\text{number of rolls before getting 6}\}$ 
+   $$T=\{1,2,3,4\ldots\}$$
+   $Y$ is discrete r.v. because it has the same cardinality as integers.
+\end{example}
+\begin{example}
+   A client enters a bank\\ 
+   $Z=\{\text{time before the arrival of the client}\}$
+   $$\mathcal{T}=[a,b]\subset(0,\infty)$$
+   $Z$ is continuous r.v.
+\end{example}
+Now we will consider particular functions that describe the behavior of random
+variables, specifically the values that can be obtained from random variables.
+\subsubsection{Discrete random variables}
+\begin{definition}[Probability mass function]
+    The \textbf{probability mass function (PMF)} represents the probability that a
+    random variable $X$ takes on a specific value $x$. Mathematically, this
+    can be expressed as: 
+    $$f_x:\mathcal{T}_x\to[0,1]$$
+    $$\forall x\in \mathcal{T}_x,f_x(x)=P(X=x)$$
+\end{definition}
+In other words, it represents the probability distribution of a discrete
+random variable has over its target space.
+\begin{example}
+   $\Omega=\{TT,TH,HT,HH\}$\\
+   $X=\{\text{number of }H\}$\\
+   $\mathcal{T}_x=\{0,1,2\}$\\
+   $f_x:\{0,1,2\}\to[0,1]$
+   $$
+   \begin{aligned}
+       f_x(0)&=P(X=0)=\frac{1}{4}\\
+       f_x(1)&=P(X=1)=\frac{2}{4}=\frac{1}{2}\\
+       f_x(2)&=P(X=2)=\frac{1}{4}
+   \end{aligned}
+   $$
+   This shows that the r.v. has most often the value 1.
+   \begin{center}
+       \includegraphics[width=0.5\linewidth]{pmf}
+   \end{center}    
+\end{example}
+Moreover, the PMF has these properties:
+\begin{enumerate}
+    \item $f_x(x)\geq0\quad\forall x\in\mathcal{T}_x$
+    \item $\sum_{x\in\mathcal{T}_x}f_x(x)=1$
+    \item $A\subset\Omega,P(X=x\in A)=\sum_{x\in A}f_x(x)$
+\end{enumerate}
+Some examples of PMF are:
+\begin{itemize}
+    \item \textbf{Uniform distribution}: the r.v takes on all possible values
+        in its target space with equal probability. 
+        $$f_x(x)=\frac{1}{N}$$
+        where $N=\#(\mathcal{T}_x)$.
+    \item \textbf{Poisson distribution}: is used to model rare events and it
+        describe the number of events happening in a given unit of time.
+        $$f_x(x)=e^{-\lambda}\frac{-\lambda}{x!}$$
+        where $\lambda$ is the mean and the standard deviation.
+\end{itemize}
+\subsubsection{Continuous random variables}
+\begin{definition}[Probability density function]
+    $X$ is a continuous r.v. if 
+    $$f_x:\mathcal{T}_x\to \mathbb{R}$$
+    $$P(a\leq X\leq b)=\int_a^b f_x(x)dx$$
+    where $[a,b]$ is an interval in $\mathbb{R}$.
+\end{definition}
+In contrast to discrete r.v., the probability of a continuous r.v. taking a
+particular value is \underline{zero}. In fact:
+$$\text{If }a=b\implies\int_a^af_x(x)dx=0$$
+In other words, the PDF represents the probability of the r.v. falling
+\textsc{within a particular range of values}, as opposed to taking on any
+one value.
+\begin{center}
+    \includegraphics[width=\linewidth]{pmf_vs_pdf}
+\end{center}
+Moreover, the PDF has these properties:
+\begin{enumerate}
+    \item $f_x(x)\geq0\quad\forall x\in\mathcal{T}_x$
+    \item $\int_a^bf_x(x)dx=1$
+\end{enumerate}
+\begin{example}
+    $X$ continuous r.v.\\ 
+    $f_x(x)=3x^2\quad0\leq x\leq 1\quad T_x=[0,1]$\\ 
+    $P(X\in[0.2,0.6])=P(0.2\leq X\leq 0.6)?$
+    $$
+    \begin{aligned}
+        P(0.2\leq X\leq
+        0.6)&=\int_{0.2}^{0.6}3x^2dx=x^3|_{x=0.2}^{0.6}=(0.6^3-0.2^3)=0.208\\
+    \end{aligned}
+    $$
+\end{example}
+Some examples of PDF are:
+\begin{itemize}
+    \item \textbf{Uniform distribution}
+        $$f_x(x)=\frac{1}{b-a}\quad x\in[a,b]=\mathcal{T}_x$$
+    \item \textbf{Normal distribution (Gaussian)}
+        $$f_x(x)=\frac{1}{\sigma\sqrt{2\pi}}e^{\frac{-(x-\mu)^2}{2\sigma^2}}\quad
+        x\in \mathbb{R}$$
+        where $\mu,\sigma$ are respectively the mean and the standard deviation.
+        \begin{center}
+            \includegraphics[width=\linewidth]{gaussian}
+        \end{center}
+        The special case of the gaussian with $\mu=0\text{ and }\sigma=1$ is
+        referred as \textit{standard normal distribution}.
+\end{itemize}
+\subsection{Multiple random variables}
+\begin{definition}
+    \textbf{Univariate} refers to the distribution of a single r.v., while
+    \textbf{multivariate} refers to the distributions of more than one r.v.
+\end{definition}
+\paragraph{Multivariate Normal distribution.}
+$$\mathcal{N}(x\ | \ \mu, \Sigma)=(2\pi)^{-\frac{D}{2}}\left\lvert
+\Sigma\right\rvert^{-\frac{1}{2}}e^{(x-\mu)^T\Sigma^{-1}(x-\mu)}$$
+where $x=(x_1,\ldots,x_D)$. When the Gaussian distribution has $\mu=0$ and
+$\Sigma=I$, it is referred to as \textit{standard normal distribution}.
+\begin{definition}[Joint probability]
+    The target space of each of the \textbf{joint probability} is the
+    Cartesian product of the target spaces of each of the random variables.
+    Mathematically, considering two random variables $X$ and $Y$ and their
+    target spaces, $\mathcal{T}_X$ and $\mathcal{T}_Y$:
+    $$\mathcal{T}_{XY}=\mathcal{T}_X\times \mathcal{T}_Y=\{(t_X,t_Y)\ |
+    \ t_X\in\mathcal{T}_X,t_Y\in\mathcal{T}_Y\}$$
+    The joint probability is defined as:
+    $$f_{XY}:\mathcal{T}_{XY}\to[0,1]$$
+    $$f_{XY}(x_i,y_j)=P(X=x_i,Y=y_j)=\frac{n_{ij}}{N}\quad x_i,y_j\in\mathcal{T}_{XY}$$
+    where $n_{ij}$ is the number of the events with state $x_i$ and $y_j$ and
+    $N$ the total number of the events.
+    We can also say that the joint probability is the probability of the
+    intersections of both events, such that $P(X=x_i,Y=y_j)=P(X=x_i\cap
+    Y=y_j)$.
+\end{definition}
+\begin{center}
+    \includegraphics[width=0.65\linewidth]{marginal_probability}
+\end{center}
+\begin{definition}[Marginal probability] It's the probability of a single
+    event occurring, independent of other event. This can be computed as the
+    sum of the row or column: 
+    $$
+    \begin{aligned}
+        f_X(x_i)=P(X=x_i)&=\frac{c_i}{N}\\
+        f_Y(y_j)=P(Y=y_i)&=\frac{r_i}{N}
+    \end{aligned}
+    $$
+    where $c_i$ and $r_i$ are respectively the $i$th column and $j$th row of the
+    probability table.
+\end{definition}
+\begin{definition}[Conditional probability]
+    It's the probability that an event occurs given that another specified
+    event has \underline{already} happened. This can be computed using the
+    following formulas: 
+    $$
+    \begin{aligned}
+        P(Y=y_j\ |\ X=x_i)&=\frac{P(X=x_i\cap
+        Y=y_j)}{P(X=x_i)}=\frac{n_{ij}}{c_i}\\
+        P(X=x_i\ |\ Y=y_j)&=\frac{P(Y=y_i\cap X=x_j)}{P(Y=y_i)}=\frac{n_{ij}}{r_j}
+    \end{aligned}
+    $$
+\end{definition}
+Given the definitions of the marginal and conditional probability for ours
+r.v. we can now present two rules in probability theory:
+\begin{itemize}
+    \item \textbf{Sum rule}:
+        $$
+        f_X(x_i)=\begin{cases}
+            \sum_{y_j\in\mathcal{T}_y} f_{XY}(x_i,y_j) & \text{if }y\text{ is
+            discrete} \\
+                \int_{\mathcal{T}_Y}f_{XY}(x_i,y_j)dy_j & \text{if }y\text{ is
+                continuous}
+        \end{cases}
+        $$
+    \item \textbf{Product rule}: the joint distribution of two random
+        variables can be factorized as conditional distribution and marginal
+        distribution
+        {\color{blue}$$f_{XY}(x_i,y_j)=P(Y=y_j\ |\ X=x_i)f_X(x_i)$$}
+        or 
+        {\color{blue}$$f_{XY}(x_i,y_j)=P(X=x_j\ |\ Y=y_i)f_Y(y_j)$$}
+\end{itemize}
+\begin{theorem}[Bayes's theorem]
+    The bayes theorem states how to update the prior with new information
+    given by the likelihood. In particular: 
+    $$\underbrace{P(x\ |\
+    y)}_{\text{posterior}}=\frac{\overbrace{P(y\ |\ x)}^{
+    \text{likelihood}}\overbrace{P(x)}^{\text{prior}}}{\underbrace{P(y)}_{\text{evidence}}}$$
+
+    \begin{itemize}
+        \item \textbf{Prior}: encapsulates our subjective prior knowledge of
+            the \underline{unobserved} variable $x$ before observing any data.
+            We can choose any prior that makes sense.
+        \item \textbf{Likelihood}: it is the probability of the data $y$ if we
+            were to know the latent variable $x$.
+        \item \textbf{Posterior}: what we are interest in, i.e, what we know
+            about $x$ after having observed $y$.
+        \item \textbf{Evidence}: acts like a normalizing constant. 
+    \end{itemize}
+\end{theorem}
+It's possible to focus on some statistic of the posterior, such as the maximum
+of the posterior.
+$$\argmax_x{P(x\ |\ y)}\underset{\text{Bayes}}=\frac{P(y\ |\
+x)P(x)}{\cancel{P(y)}}$$
+\subsection{Summary statistics}
+The statistic of a r.v. is a deterministic function of that r.v.. The summary
+statistic provide one useful view of how a r.v. behave and provide
+numbers that summarize and characterize it.
+
+\begin{definition}[Expected Value]
+    The expected value of a function $g:\mathbb{R}\to \mathbb{R}$ of a
+    \underline{univariate} r.v. $X$ is given by
+    $$\mathbb{E}_X[g(x)]=\begin{cases}
+        \int_{\mathcal{T}_X}g(x)f_X(x) & \text{if }X\text{ is continuous}\\ 
+        \sum_{x\in\mathcal{T}_X} g(x)f_X(x) & \text{if }X\text{ is discrete}
+    \end{cases}$$
+    For \underline{multivariate} r.v. $X=[X_1,\ldots,X_D]$, the
+    expected value is a vector of expected values of the respective univariate
+    r.v.: 
+    $$
+    \mathbb{E}_X[g(x)]=\begin{bmatrix}
+        \mathbb{E}_{X_1}[g(x_1)]\\
+        \vdots\\
+        \mathbb{E}_{X_D}[g(x_D)]
+    \end{bmatrix}\in \mathbb{R}^D
+    $$
+\end{definition}
+The definition of the mean is a special case of the expected value, obtained
+by choosing $g$ to be the identity function $g(x)=x$.
+\begin{definition}[Mean]
+    The mean of a multivariate r.v. $X=[X_1,\ldots,X_D]$ is an average and is
+    defined as 
+    $$
+    \mathbb{E}_X[g(x)]=\begin{bmatrix}
+        \mathbb{E}_{X_1}[x_1]\\
+        \vdots\\
+        \mathbb{E}_{X_D}[x_D]
+    \end{bmatrix}\in \mathbb{R}^D
+    $$
+    where each one corresponds to 
+    $$\begin{cases}
+        \int_{\mathcal{T}_X}xf_X(x) & \text{if }X\text{ is continuous}\\ 
+        \sum_{x\in\mathcal{T}_X} xf_X(x) & \text{if }X\text{ is discrete}
+    \end{cases}$$
+\end{definition}
+The mean is also called the expected value because it represents the most
+probable value.
+\begin{example}
+    $X$ continuous r.v.\\ 
+    $f_x(x)=3x^2\quad0\leq x\leq1$\\ 
+    mean of $f_x(x)$?
+    $$
+        \mathbb{E}_x[x]=\int_0^1xf_x(x)dx=\int_0^13x^3dx=\frac{3}{4}x^4\ |_{x=0}^1=\frac{3}{4}
+    $$
+\end{example}
+\begin{definition}[Covariance]
+    The Covariance between two univariate random variable $X,Y\in \mathbb{R}$
+    is given by the expected product of their deviations from their respective
+    means:
+    $$\text{Cov}_{X,Y}[x,y]=\mathbb{E}_{X,Y}[(x-\mathbb{E}_X[x])(y-\mathbb{E}_Y[y])]$$
+    When dealing with two multivariate r.v., $X=(X_1,\ldots,X_D)$ and
+    $Y=(Y_1,\ldots,Y_E)$, the covariance between $X$ and $Y$ is defined as
+    follows: 
+    $$\text{Cov}_{X,Y}[x,y]=\begin{bmatrix}
+        \text{Cov}[x_1,y_1] & \ldots &
+        \text{Cov}[x_1,y_E] \\ 
+        \vdots & \ddots & \vdots \\ 
+        \text{Cov}[x_D,y_1] & \ldots & \text{Cov}[x_D,y_E]
+    \end{bmatrix}\in \mathbb{R}^{D\times E}$$
+    The $D\times E$ matrix is called the \textbf{cross-covariance matrix} of
+    the two multivariate r.v. $X$ and $Y$.
+\end{definition}
+\begin{definition}[Variance]The covariance of a variable with itself $\text{Cov}_{X,X}[x,x]$ is called
+    \textbf{variance} and is defined as follows:
+    $$
+        \begin{aligned}
+            \mathbb{V}_X[x]&=\text{Cov}_X[x,x]\\
+                           &=\begin{bmatrix}
+                               \text{Cov}[x_1,x_1] & \ldots &
+                               \text{Cov}[x_1,x_D] \\ 
+                               \vdots & \ddots & \vdots \\ 
+                               \text{Cov}[x_D,x_1] & \ldots & \text{Cov}[x_D,x_D]
+                           \end{bmatrix}
+        \end{aligned}
+    $$
+    The $D\times D$ matrix is called the \textbf{covariance matrix} of the
+    multivariate r.v. $X$.
+\end{definition}
+The covariance indicates how two r.v. are related in terms of their
+dimensions. However, since covariance lacks an upper bound, it doesn't provide
+a clear indication how much they are related. To address this, a normalized
+version of covariance, which constraints the range between -1 and 1, offer a
+more convenient statistic to measure the relationship between two r.v.
+\begin{definition}[Correlation]
+    The correlation between two r.v. $X,Y$ is given by
+    $$\text{corr}_{X,Y}[X,Y]=\frac{\text{Cov}_{X,Y}[x,y]}{\sqrt{\mathbb{V}_X[x]\mathbb{V}_Y[y]}}\in[-1,1]$$
+\end{definition}
+Positive correlation means that when $x$ grows, the $y$ is also expected to
+grow. Negative correlation means that as $x$ increases then $y$ decreases
+\begin{center}
+    \includegraphics[width=\linewidth]{correlation}
+\end{center}
+\paragraph{Empirical statistics}
+The definitions above are called population mean and population covariance, as
+it refers to the true statistics for the population.
+\begin{center}
+    \includegraphics[width=0.5\linewidth]{population}
+\end{center}
+From a dataset that represents a sample of the population, we observe it and
+infer some properties of the population:
+\begin{itemize}
+    \item \textbf{Empirical mean}:
+        $$\bar{x}=\frac{1}{N}\displaystyle\sum_{i=1}^{N}x_i$$
+    \item \textbf{Empirical variance}:
+        $$\mathbb{V}_X[x]=\frac{1}{N}\displaystyle\sum_{i=1}^{N}(x_i-\bar{x})$$
+    \item \textbf{Empirical standard definition}: 
+        $$\sigma=\sqrt{\mathbb{V}_X[x]}$$
+\end{itemize}
+\subsection{Algebra of random variables}
+Considering two r.v. $X=(X_1,\ldots,X_D)$ and $Y=(Y_1,\ldots,Y_D)$, then:
+$$
+\begin{aligned}
+    \mathbb{E}_{X,Y}[x+y]&=\mathbb{E}_X[x]+\mathbb{E}_Y[y]\\
+    \mathbb{E}_{X,Y}[x-y]&=\mathbb{E}_X[x]-\mathbb{E}_Y[y]\\
+    \mathbb{V}_{X,Y}[x+y]&=\mathbb{V}_X[x]+\mathbb{V}_Y[y]+\text{Cov}_{X,Y}[x,y]+\text{Cov}_{Y,X}[y,x]\\
+    \mathbb{V}_{X,Y}[x-y]&=\mathbb{V}_X[x]+\mathbb{V}_Y[y]-\text{Cov}_{X,Y}[x,y]-\text{Cov}_{Y,X}[y,x]\\
+\end{aligned}
+$$
+\begin{definition}[Independence]
+    Two r.v., $X$ and $Y$, are statistically independent if the joint
+    probability of $X$ and $Y$ can be written as the product of their marginal
+    probabilities:
+    $$f_{X,Y}[x,y]=f_X[x]f_Y[y]$$
+    Intuitively, this means that the two r.v. don't influence each other.
+\end{definition}
+If $X,Y$ are independent, then: 
+$$
+\begin{aligned}
+    P(Y=y\ |\ X=x) &= P(Y=y)\\
+    P(X=x\ |\ Y=y) &= P(X=x)\\
+    \mathbb{V}_{X,Y}[x+y]&=\mathbb{V}_X[x]+\mathbb{V}_Y[y]\\
+    \text{Cov}_{X,Y}[x,y] &= 0
+\end{aligned}
+$$
+The viceversa of the last point doesn't hold.
+
+\begin{definition}[Conditional Independence]
+    Two r.v., $X$ and $Y$, are conditionally independent given $Z$ if and only
+    if 
+    $$P(X=x\cap Y=y\ |\ Z=z)=P(X=x\ |\ Z=z)P(Y=y\ |\ Z=z)$$
+\end{definition}
+\paragraph{Geometry.}r.v. can be considered vectors in a vector space of
+probability distributions, and we can define inner product to obtain geometric
+properties of it. Recall the definition of inner products
+$\langle\cdot,\cdot\rangle:(x,y)\to \mathbb{R}$, so for zero mean r.v. $X$ and
+$Y$
+$$\langle X,Y\rangle=\text{Cov}_{X,Y}[x,y]\in \mathbb{R}^+$$
+The \underline{length of a r.v. is the standard deviation}:
+$$\lVert X\rVert=\sqrt{\text{Cov}_{X,Y}[x,x]}=\sqrt{\mathbb{V}[x]}=\sigma[x]$$
+The longer the r.v, the more uncertain it is; and a r.v with length 0 is
+deterministic.
+
+We can interpret the \underline{angle $\theta$ between two r.v., $X$ and $Y$,
+as their correlation}:
+$$\cos\theta=\frac{\langle X,Y\rangle}{\lVert X\rVert \lVert
+Y\rVert}=\frac{\text{Cov}_{X,Y}[x,y]}{\sqrt{\mathbb{V}_X[x]\mathbb{V}_Y[y]}}$$
+
+Recall that two vectors are orthoganal if and only if:
+$$X\perp Y\iff\langle X,Y\rangle=0$$
+Therefore, they are orthogonal if and only if $\text{Cov}_{X,Y}[x,y]=0$.
+\paragraph{Gaussian linearity.}
+For two independent r.v., $X,Y$, we have:
+$$
+\begin{aligned}
+    f_{X,Y}[x+y]&=\mathcal{N}(\mu_x+\mu_y,\Sigma_x+\Sigma_y) \\
+    f_{X,Y}[\alpha x+\beta y]&=\mathcal{N}(\alpha\mu_x+\beta\mu_y,\alpha^2\Sigma_x+\beta^2\Sigma_y) 
+\end{aligned}
+$$
+where $\alpha,\beta\in \mathbb{R}$. This means that in both cases, the result
+will be a Gaussian distribution.
+\cleardoublepage
+\section{Machine Learning Problems}
 \end{document}
