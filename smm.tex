@@ -1184,4 +1184,177 @@ where $\alpha,\beta\in \mathbb{R}$. This means that in both cases, the result
 will be a Gaussian distribution.
 \cleardoublepage
 \section{Machine Learning Problems}
+In machine learning, our main goal, is to create models, or predictors,
+that make good predictions on unseen data. The concept of a model can be seen
+in two ways:
+\begin{itemize}
+    \item \textbf{as function (deterministic).} A predictor is a function:
+        $$f:\mathbb{R}^D\to \mathbb{R}$$
+        Here, the input vector $x$ is a $D$-dimensional (that has $D$
+        features), and the function $f$, when applied to this vector, returns
+        a real number. We will focus on linear functions, which can be
+        represented as:
+        $$f(x)=\theta^Tx$$
+        where $\theta=[\theta_0,\theta_1,\ldots,\theta_D]$ and
+        $x=[1,x^{(1)},\ldots,x^{(D)}]$ (we have concatenated an unit feature
+        $x^{(0)}=1$ to $x$, which allows us to incorporate the bias term into
+        the vector $\theta$).\\
+        The parameters of the function are represented by $\theta$.
+    \item \textbf{as multivariate probability distribution (probabilistic).}
+        In this case, the parameters correspond to those of the distribution.
+\end{itemize}
+In order to obtain good predictions from a model, it's essential to adjust its
+parameters using training data (learning). There are two main approaches to this
+parameter adjustment: for non-probabilistic models, we use \textbf{empirical
+risk minimization}, and for probabilistic models, we utilize the method of
+\textbf{maximum likelihood} estimation.
+\subsection{Empirical Risk Minimization}
+\begin{center}
+    \includegraphics[width=0.5\linewidth]{dataset}
+\end{center}
+Given a dataset consisting of $N$ examples $x_n \in \mathbb{R}^D$ and
+corresponding scalar labels $y_n \in \mathbb{R}$, we consider a supervised
+learning scenario. In this setting, we work with pairs $(x_1, y_1), \ldots,
+(x_N, y_N)$. The objective is to identify the optimal parameters $\theta^*$ of
+a predictor $f(\cdot,\theta):\mathbb{R}^D\to \mathbb{R}$, such that the model
+fits well the data. In other words, we aim for 
+$$f(x_n,\theta^*)=\hat{y}\approx y_n\quad\forall n=1,\ldots,N$$
+To define what it means to fit the data well, we need to specify a \textbf{loss
+function} $\ell(y_n,\hat{y}_n)$, which take the ground truth label $y_n$ and
+the prediction $\hat{y}_n$ as input and produces a non-negative number representing how
+much error the model has been made on the particular prediction.
+
+The optimal parameter vector $\theta^*$ is given by minimizing the average
+loss of the set of $N$ training samples that is given by \textbf{empirical
+risk}:
+$$R_{\text{emp}(f,X,y)}=\frac{1}{N}\sum^{N}_{n=1}\ell(y_n,\hat{y}_n)$$
+$$\theta^*=\min_{\theta\in\mathbb{R}^D}\frac{1}{N}\sum^{N}_{n=1}\ell(y_n,\hat{y}_n)$$
+\begin{example}
+    An example of a loss is the least-squares
+    $\ell(y_n,\hat{y}_n)=(y_n-\hat{y}_n)$, thus:
+    $$\theta^*=\min_{\theta\in\mathbb{R}^D}\frac{1}{N}\sum^{N}_{n=1}(y_n-f(x_n,\theta))^2$$
+    where we substituted the predictor $\hat{y}_n=f(x_n,\theta)$. By using the
+    linear predictor $f(x_n\theta)=\theta^Tx_n$ we obtain:
+    $$\theta^*=\min_{\theta\in\mathbb{R}^D}\frac{1}{N}\sum^{N}_{n=1}(y_n-\theta^Tx_n)^2$$
+    That is equivalently expressed in matrix form: 
+    $$\theta^*=\min_{\theta\in\mathbb{R}^D}\frac{1}{N}\lVert y-X\theta\rVert^2$$
+    This is known as the \textit{least-squares problem}.
+\end{example}
+However, we aren't interested in a predictor that only perform well on the
+training data. Instead, we seek a predictor that performs well on unseen data
+, i.e. the predictor generalizes well.
+\begin{center}
+    \includegraphics[width=0.5\linewidth]{dataset_traintest} 
+\end{center}
+Given a dataset constituted of $M$ examples $x_m\in \mathbb{R}^D$ and
+corresponding scalar labels $y_m$, we divide the dataset into two parts: a
+training set with $N$ examples and a \textbf{test set} with the remaining
+$M-N$ examples. We simulate the unseen data by using this test set.
+
+Now we are interested in finding a predictor $f$ (\underline{with parameters
+fixed}) that minimized the \textbf{expected risk}:
+$$R_{\text{true}}(f)=\mathbb{E}_{x,y}[\ell(y,f(x))]$$
+Here, minimizing the expected risk means finding the predictor that has the
+lowest loss when evaluated on the entire population, which in our scenario is
+represented by the test set.
+\paragraph{Regularization.}
+When the test risk is much larger than the training risk, this is an
+indication of \textbf{overfitting}, i.e. the predictor fits too closely to the
+training data and doesn't generalize well to new data. This issue often arises
+when utilizing overly complex models. To address this, we introduce a penalty
+term involving $\theta$, which serves to reduce the model's complexity:
+$$\theta^*=\min_{\theta\in\mathbb{R}^D}\frac{1}{N}\lVert
+y-X\theta\rVert^2+\lambda \lVert \theta\rVert^2$$
+The additional term $\lVert \theta\rVert^2$ is called \textit{regularizer},
+and the hyperparameter $\lambda$ is the \textit{regularization parameter}.
+This hyperparameter trades off minimizing the loss on the training set and the
+magnitude of the parameter $\theta$. A sign of overfitting is when the values
+of the parameters become large. By applying the penalty term, we essentially
+restrict the vector $\theta$ to remain closer to the origin.
+\begin{center}
+    \includegraphics[width=0.75\linewidth]{regularization}
+\end{center}
+\subsection{Parameter estimation of a probability distribution}
+In a supervise learning setting, we have a dataset consisting of $N$ pairs\\
+$(x_1,y_1)\ldots,(y_N,y_N)$, where each $x_n\in \mathbb{R^D}$ and $y_n\in
+\mathbb{R}$ (for $n=1,\ldots,N$). We assume these pairs are
+\underline{independently identically distribuited}.
+
+Each vector $x_n$ is drawn from an unknown probability distribution $x_n\sim
+P(x)$. The corresponding label $y_n$ is considered as an output from a
+conditional probability distribution of labels given the examples for the
+particular parameter setting $\theta$, $y_n\sim P_\theta(y\ |\ x_n)$.
+\subsubsection{Maximum Likelihood Estimation}
+With this framework, learning a model can be thought as finding the parameters
+of a distribution $P_\theta(y\ |\ x)$ (the likelihood) that maximized the
+probability of observing $y$, given $x$. Therefore, we must solve the
+optimization problem: 
+$$\theta^*=\argmax_{\theta}P_\theta(y\ |\ x)$$
+which is called \textbf{Maximum Likelihood Estimation (MLE)}, because the
+parameters $\theta^*$ are chosen such that they maximize the likelihood.
+
+Given the assumption of independence, we can factorized the whole dataset
+into a product o the likelihoods of each individual example: 
+$$P_\theta(x,y)=\prod_{n=1}^NP_\theta(y_n\ |\ x_n)$$
+Thus, the MLE can be reformulated as: 
+$$\theta^*=\argmax_{\theta}\prod_{n=1}^NP_\theta(y_n\ |\ x_n)$$
+Here, $P_\theta(y_n\ |\ x_n)$ represents a particular distribution, and all of
+these distribution are the same that share the same parameters.
+
+Since the logarithm function is monotonic, applying it to the optimization
+problem does not alter its solution. Furthermore, since for any function
+$f(x)$, $\argmax_x f(x)=\argmin_x -f(x)$ can be restated as:
+$$\theta^*=\argmin_{\theta}-\log\prod^{N}_{i=1} P_\theta(y_n\ |\
+x_n)$$
+which is the classical formulation of an MLE problem.
+
+\paragraph{Gaussian distribution.} If we specify a Gaussian likelihood for
+each example pair $x_n,y_n$ as
+$$P_\theta(y_n\ |\ x_n)=\mathcal{N}(y_n\ |\ f_{\theta}(x_n),\sigma^2)$$
+the negative likelihood can be rewritten as
+$$
+\begin{aligned}
+    \theta^*&=-\displaystyle\sum_{n=1}^{N}\log P_\theta(y_n\ |\ x_n)\\ 
+            &=-\displaystyle\sum_{n=1}^{N}\log
+            \mathcal{N}(f_\theta(x_n),\sigma^2)\\ 
+            &=-\displaystyle\sum_{n=1}^{N}\log
+            \frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{(y_n-f_\theta(x_n))^2}{2\pi^2}}\\ 
+            &=-\displaystyle\sum_{n=1}^{N}\log e^{-\frac{(y-f_\theta(x))^2}{2\pi^2}}-\displaystyle\sum_{n=1}^{N}\log
+            \frac{1}{\sqrt{2\pi\sigma^2}}\\ 
+            &=
+            \frac{1}{2\sigma^2}\displaystyle\sum_{n=1}^{N}(y-f(x_n))^2-\displaystyle\sum_{n=1}^{N}\log
+            \frac{1}{\sqrt{2\pi\sigma^2}}
+\end{aligned}
+$$
+Since the second term is constant in minimizing the MLE, MLE with Gaussian
+likelihood becomes 
+$$\theta^*=\argmin_{\theta}\displaystyle\sum_{n=1}^{N}\frac{1}{2}(y_n-f_\theta(x_n))^2$$
+which can be reformulated as a Least Squares problem:
+$$\theta^*=\argmin_{\theta}\frac{1}{2}\lVert f_\theta(x)-y\rVert^2$$
+where $y=[y_1,\ldots,y_N]$, while
+$f_\theta(x)=[f_\theta(x_1),\ldots,f_\theta(x_N)]$.
+
+\subsubsection{Maximum A Posteriori Estimation}
+Maximum likelihood estimation may suffer from overfitting. A different
+approach is to stop using MLE. The idea is to reverse the problem and, instead
+of searching the parameters $\theta$ such that the probability of observing
+the outcomes $y$ given the data $x$ is maximized, i.e. maximizing $P_\theta(y\
+|\ x)$, as in MLE, try to maximize the probability of the parameters $\theta$
+given the observed data is $(x,y)$. Mathematically, we want to solve:
+$$\theta^*=\argmax_{\theta}P(\theta\ |\ x,y)$$
+Since $P(\theta\ |\ x,y)$ is the \textit{posterior distribution}, this method
+is usually referred to as a \textbf{Maximum A Posteriori}. we can
+express it in terms of the likelihood $P(y\ |\ x,\theta)$ and the prior
+$P(\theta)$, as a consequence of Bayes Theorem. Thus, MAP can be rewritten as
+$$\theta^*=\argmax_{\theta}P(y\ |\ x,\theta)P(\theta)$$
+Just as with MLE, we can change to minimum point estimation by changing the
+sign an applying the logarithm:
+$$\theta^*=\argmin_{\theta}-\log P(y\ |\ x,\theta)-\log P(\theta)$$
+If we assume that $P(\theta)=\mathcal{N}(0,\sigma^2)$ is a Gaussian distribution
+with zero mean. Thus,
+$$-\log P(\theta)=\frac{1}{2\sigma^2}\lVert\theta\rVert^2$$
+That introduces an additional term that biases the resulting parameters to be
+close to the origin.
+\cleardoublepage
+\section{Linear Regression}
 \end{document}
