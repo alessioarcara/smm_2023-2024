@@ -134,6 +134,98 @@ can have multiple eigenvectors.
 This theorem states that eigenvectors of a matrix with $n$ distinct eigenvalues
 form a basis of $\mathbb{R}^n$.
 \cleardoublepage
+\section{Least Square Problem}
+Considering the problem 
+$$\underset{m\times n}{A}x=b$$
+with more rows than columns ($m>n$).
+
+Finding an exact solution to this system, i.e. satisfying $Ax-b=0$ is
+impossible. However, we can seek an approximate solution $\tilde{x}$, such
+that $A\tilde{x}-b\approx0$.
+
+To quantify the closeness of the vector $A\tilde{x}-b$, also called residual
+, to zero, we use the 2-norm. Thus,
+$$\tilde{x}=\argmin_{x\in \mathbb{R}^n}\lVert Ax-b\rVert_2$$
+This minimization problem can be expressed in terms of the squared 2-norm,
+which is equivalent:
+$$\tilde{x}=\argmin_{x\in \mathbb{R}^n}\lVert Ax-b\rVert_2^2$$
+
+Considering the $r=\text{rank}(A)$ we have two possibilities:
+\begin{enumerate}
+    \item $r=n\to$ The least square problem has a unique solution $\forall b\in
+        \mathbb{R}^m$.
+
+        By solving the so-called \textbf{normal equations}
+        $$A^TAx=A^Tb$$
+        where $A^TA$ is $n\times n$ symmetric and positive definite matrix if
+        $\text{rank}(A)=n$ then the matrix is non singular. This can be
+        computed efficiently using the direct method \textsc{Cholesky
+        decomposition}.
+
+        For any $B$ symmetric and positive definite, the Cholesky decomposition
+        factorizes it as the product of two matrices:
+        $$B=LL^T$$
+        where $L$ is lower triangular and $L^T$ is upper triangular.
+
+        The computational complexity is $\mathcal{O}(\frac{n^3}{6})$, which is
+        half of complexity of LU factorization.
+
+        The solution $x$ is then computed as
+        $$
+        \begin{aligned}
+            A^TAx=A^Tb\\
+            L\underbrace{L^Tx}_{y}=A^Tb\\
+            \begin{cases}
+                Ly=A^Tb \\ 
+                L^Tx=y
+            \end{cases}
+        \end{aligned}
+        $$
+    \item $r<n\to$ The least square problem has infinite solutions $\forall
+        b\in \mathbb{R}^m$.
+
+        Among the infinite possible solutions $S=\{x\in\mathbb{R}^n\ |\
+        x\text{ solutions of } \min\lVert Ax-b\rVert_2^2\}$ we are interested
+        in  computing one \underline{unique} $x^*$ that has the minimum norm
+        (2-norm): 
+        $$x^*=\min_{x\in S}\lVert x \rVert_2$$
+        That is computed using the SVD decomposition of $A=U\Sigma V^T$:
+        $$x^*=\sum_{i=1}^r\frac{u_i^Tb}{\sigma_i}v_i$$
+        where $U=(u_1,\ldots,u_m)\in\mathbb{R}^{m\times m}$,
+        $V=(v_1,\ldots,v_n)\in\mathbb{R}^{n\times n}$, $\sigma_i\in\mathbb{R}^+$ and
+        $b\in\mathbb{R}^m$.
+\end{enumerate}
+\begin{example}
+    Consider a polynomial of degree $n$ given by
+    $f_\theta(x)=\theta_0+\ldots+\theta_nx^n$, where we want compute the
+    parameters $\theta=\{\theta_0,\ldots,\theta_n\}$ that fit well the given
+    data pairs $(x_i,y_i)_{i=0,\ldots,m}$.
+    \begin{center}
+        \includegraphics[width=0.5\linewidth]{least_square}
+    \end{center}
+    Fitting the data means to minimize the residuals (the distance between an
+    observed value and the predictor's value) $r=(r_0,\ldots,r_m)=y-Ax-b$,
+    through the solution of a least square problem. In this context, $Ax-b$ is
+    defined as follows:
+    $$
+    \begin{cases}
+        r_0=y_0-f(x_0)=y_0-(\theta_0+\ldots+\theta_nx_0^n)\\
+        \vdots \\ 
+        r_m=y_m-f(x_m)=y_m-(\theta_0+\ldots+\theta_nx_m^n)\\
+    \end{cases}
+    $$
+    This expression can be more compactly rewritten as $r=y-A\theta$ where $A$
+    is given by:
+    $$A=\begin{bmatrix}
+        1 & x_0 & x_0^2 & \ldots & x_0^n \\
+        1 & x_1 & x_1^2 & \ldots & x_1^n \\
+        \vdots & \vdots & \vdots & & \vdots \\
+        1 & x_m & x_m^2 & \ldots & x_m^n \\
+    \end{bmatrix}$$
+    Therefore, the task of minimizing $r$ can be formulated as:
+    $$\min_{\theta\in\mathbb{R}^n}\lVert y-A\theta\rVert_2^2$$
+\end{example}
+\cleardoublepage
 \section{Vector calculus}
 Firstly, we'll explore partial derivatives and gradients, focusing on functions that take a vector as input and produce a
 single real number as output. These functions are formally represented as
@@ -1453,9 +1545,13 @@ $$
 $$
 To get a better fit for our predictor, represented as
 $f(x)=\sum_{n=0}^{K-1}\theta^*x^n$, on the training data, we can vary the
-degree of the polynomial. However, our goal is to have a predictor that
-generalizes well. Therefore, we plot the loss on both the training and
-test sets while varying the polynomial degree.
+degree of the polynomial. 
+\begin{center}
+    \includegraphics[width=\linewidth]{polynomial_degree}
+\end{center}
+However, our goal is to have a predictor that generalizes well. Therefore, we
+plot the loss on both the training and test sets while varying the polynomial
+degree.
 
 A more robust metric for assessing the model's quality is by computing the
 \textit{root mean square error (RMSE)}, defined as:
@@ -1463,9 +1559,7 @@ $$\sqrt{\lVert
 y-\Phi\theta\rVert^2/N}=\sqrt{\frac{1}{N}\sum_{n=1}^{N}(y_n-\phi^T(x_n)\theta)^2}$$
 which allows us to compare errors of dataset with different sizes and has the
 same unit measure of the observed values $y_n$.
-\begin{center}
-    \includegraphics[width=\linewidth]{polynomial_degree}
-\end{center}
+
 When observing that RMSE decreases on the training set but increases on the
 test, it is indicative of overfitting. Again, we can plot the RMSE while
 varying polynomial degree and opt for the higher one just before the
