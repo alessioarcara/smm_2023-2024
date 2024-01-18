@@ -1343,7 +1343,7 @@ the outcomes $y$ given the data $x$ is maximized, i.e. maximizing $P_\theta(y\
 given the observed data is $(x,y)$. Mathematically, we want to solve:
 $$\theta^*=\argmax_{\theta}P(\theta\ |\ x,y)$$
 Since $P(\theta\ |\ x,y)$ is the \textit{posterior distribution}, this method
-is usually referred to as a \textbf{Maximum A Posteriori}. we can
+is usually referred to as a \textbf{Maximum A Posteriori (MAP)}. we can
 express it in terms of the likelihood $P(y\ |\ x,\theta)$ and the prior
 $P(\theta)$, as a consequence of Bayes Theorem. Thus, MAP can be rewritten as
 $$\theta^*=\argmax_{\theta}P(y\ |\ x,\theta)P(\theta)$$
@@ -1356,5 +1356,128 @@ $$-\log P(\theta)=\frac{1}{2\sigma^2}\lVert\theta\rVert^2$$
 That introduces an additional term that biases the resulting parameters to be
 close to the origin.
 \cleardoublepage
-\section{Linear Regression}
+\section{Polynomial Linear Regression}
+Given a dataset consisting of $N$ pairs $(x_n,y_n)_{n=1,\ldots,N}$ with inputs
+$x_n\in \mathbb{R}^D$ and function values $y_n=f(x_n)+\epsilon$, where
+$\epsilon$ is a i.i.d. r.v. that models the noise following a zero-mean
+Gaussian distribution $\epsilon\sim \mathcal{N}(0,\sigma^2)$. As a result,
+$y_n$ follows the same distribution due to this noise.
+\begin{center}
+    \includegraphics[width=0.5\linewidth]{polynomial_dataset}
+\end{center}
+Our goal is to find a function that is similar to the unknown function $f$
+that generated the data. If we consider a standard linear regression,
+represented as $f(x_n)=x_n^T\theta$, we can only fit straight lines to data.
+However, if we consider the non linear transformation
+$f(x_n)=\phi^T(x_n)\theta$, which is still linear in terms of $\theta$, we get
+the corresponding linear model $y_i=\phi^T(x_n)\theta+\epsilon_i$ where
+$\phi:\mathbb{R}^D\to \mathbb{R}^K$ and $\phi_k:\mathbb{R}^D\to \mathbb{R}$:
+$$
+\phi(x)=\begin{bmatrix}
+    \phi_0(x) \\ 
+    \phi_1(x) \\ 
+    \vdots \\
+    \phi_{K-1}(x)  
+\end{bmatrix}
+\in \mathbb{R}^K
+$$
+\begin{example}
+    For a second polynomial the transformation $\phi(x)$ is defined as
+    $$
+    \phi=\begin{bmatrix}
+        1 \\ 
+        x \\ 
+        x^2
+    \end{bmatrix}
+    $$    
+\end{example}
+The original one-dimensional space can be ``lifted" into a $K$-dimensional
+feature space. If we choose all monomials $x^k$ for $k=0,\ldots,K-1$ we are
+able to model polynomials $\leq K-1$ within the framework of linear
+regression. A polynomial of degree $K-1$ is
+$$
+\begin{aligned}
+    f(x_n)&=\phi^T(x_n)\theta \\
+       &= \displaystyle\sum_{n=0}^{K-1}\theta_nx^n
+\end{aligned}
+$$
+Considering all $N$ training inputs, we can define the \textit{feature matrix}
+as 
+$$
+\Phi=\begin{bmatrix}
+   \phi^T(x_1) \\ 
+   \vdots \\
+   \phi^T(x_N) 
+\end{bmatrix} = \begin{bmatrix}
+\phi_0^T(x_1) & \ldots & \phi_{K-1}(x_1) \\ 
+\phi_0^T(x_2) & \ldots & \phi_{K-1}(x_2) \\
+\vdots & & \vdots \\ 
+\phi_0^T(x_N) & \ldots & \phi_{K-1}(x_N) \\
+\end{bmatrix}
+\in \mathbb{R}^{N\times K}
+$$
+where $\Phi_{ij}=\phi_j(x_i)$ and $\phi_j:\mathbb{R}^D\to \mathbb{R}$.
+\begin{example}
+    For a second-order polynomial and $N$ training points $x_n\in \mathbb{R}$,
+    $n=1,\ldots,N$, the feature matrix is
+    $$
+    \Phi=\begin{bmatrix}
+        1 & x_1 & x_1^2 \\ 
+        1 & x_2 & x_2^2 \\ 
+        \vdots & \vdots & \vdots \\ 
+        1 & x_N & x_N^2
+    \end{bmatrix}
+    $$
+\end{example}
+With the feature matrix $\Phi$ defined, the negative log-likelihood for the
+linear regression model can be written as 
+$$-\log P_\theta(y|x)=\frac{1}{2\sigma^2}\lVert y-\Phi\theta\rVert^2$$
+By treating the $\frac{1}{2\sigma^2}$ as a constant, the minimization problem
+can be thought as least square problem:
+$$\theta^*=\argmin_{\theta}\lVert y-\Phi\sigma\rVert^2$$
+This least squares problem can be solved using the \textit{normal equations} or SGD:
+$$
+\begin{aligned}
+    \min_x\lVert Ax-b\rVert^2 \\
+    A^TAx-A^Tb=0 \\
+    A^TAx=A^Tb \\ 
+    x=(A^TA)^{-1}A^Tb
+\end{aligned}
+$$
+Applying this to our minimization problem:
+$$
+\begin{aligned}
+    \Phi^T\Phi\theta=\Phi^Ty\\
+    \theta^*=(\Phi^T\Phi)^{-1}\Phi^Ty
+\end{aligned}
+$$
+To get a better fit for our predictor, represented as
+$f(x)=\sum_{n=0}^{K-1}\theta^*x^n$, on the training data, we can vary the
+degree of the polynomial. However, our goal is to have a predictor that
+generalizes well. Therefore, we plot the loss on both the training and
+test sets while varying the polynomial degree.
+
+A more robust metric for assessing the model's quality is by computing the
+\textit{root mean square error (RMSE)}, defined as:
+$$\sqrt{\lVert
+y-\Phi\theta\rVert^2/N}=\sqrt{\frac{1}{N}\sum_{n=1}^{N}(y_n-\phi^T(x_n)\theta)^2}$$
+which allows us to compare errors of dataset with different sizes and has the
+same unit measure of the observed values $y_n$.
+\begin{center}
+    \includegraphics[width=\linewidth]{polynomial_degree}
+\end{center}
+When observing that RMSE decreases on the training set but increases on the
+test, it is indicative of overfitting. Again, we can plot the RMSE while
+varying polynomial degree and opt for the higher one just before the
+overfitting divergence happens.
+\begin{center}
+    \includegraphics[width=0.75\linewidth]{overfit_underfit}
+\end{center}
+Another way to mitigate overfitting is through the use of regularization,
+transitioning from MLE to MAP:
+$$\theta^*=\argmin_\theta \lVert y-\Phi\theta\rVert^2+\lambda \lVert
+\theta\rVert^2$$
+\begin{center}
+    \includegraphics[width=\linewidth]{mle_map}
+\end{center}
 \end{document}
