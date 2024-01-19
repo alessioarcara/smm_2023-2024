@@ -271,7 +271,7 @@ $$\frac{\text{d}f}{\text{d}t}=\begin{bmatrix}
     \end{bmatrix}\begin{bmatrix}
     \frac{\partial{x_1(t)}}{\partial{t}} \\ 
     \frac{\partial{x_2(t)}}{\partial{t}}
-\end{bmatrix}=\frac{\partial{f}}{\partial{x_1}}\frac{\partial{x_1}}{\partial{t}}+\frac{\partial{t}}{\partial{x_2}}\frac{\partial{x_2}}{\partial{t}}$$
+\end{bmatrix}=\frac{\partial{f}}{\partial{x_1}}\frac{\partial{x_1}}{\partial{t}}+\frac{\partial{f}}{\partial{x_2}}\frac{\partial{x_2}}{\partial{t}}$$
 \newpage
 \begin{example}
     Consider $f(x_1,x_2)=x_1^2+2x_2$, where $x_1=\sin t$ and $x_2=\cos t$,
@@ -334,7 +334,7 @@ $$
         \end{bmatrix} \\ 
         &=\begin{bmatrix}
             2s\sin^2(t)-2t\sin(s) \\ 
-            2s^2\sin(t)\cos(t)+2\cos{t}
+            2s^2\sin(t)\cos(t)+2\cos(s)
         \end{bmatrix}=(0,2)
     \end{aligned}
     $$
@@ -371,7 +371,20 @@ $$
     function $f:\mathbb{R}^n\to \mathbb{R}^m$ is called the \textbf{Jacobian}.
     The Jacobian $J$ is an $m\times n$ matrix.
 \end{definition}
-\newpage
+\begin{definition}[Hessian]
+    The \textbf{Hessian}, denoted as $\nabla_{x_i,x_j}^2$, is the collection
+    of all second-order derivatives and the corresponding \textbf{Hessian
+    matrix}
+    $$H=\begin{bmatrix}
+        \frac{\partial^2f}{\partial x_1^2} & \ldots & \frac{\partial^2f}{\partial
+        x_1\partial x_n} \\ 
+        \vdots & \ddots & \vdots \\ 
+        \frac{\partial^2f}{\partial x_n\partial x_1} & \ldots &
+        \frac{\partial^2f}{\partial x_n^2} \\ 
+    \end{bmatrix}\in\mathbb{R}^{n\times n}$$
+    is symmetric. The element at position $i,j$ is defined as
+    $\frac{\partial^2f}{\partial x_ix\partial x_j}$.
+\end{definition}
 \begin{example}
     $f:\mathbb{R}^2\to \mathbb{R}^3,\quad f:(x_1,x_2)=\begin{pmatrix}
         x_1+x_2 \\ 
@@ -428,8 +441,6 @@ resulting derivative equations. To address this, the \textbf{backpropagation} al
 was introduced in 1962 as an efficient way to compute these gradients,
 particularly for neural networks.
 
-
-
 In neural networks, the output $y$ is computed through a multi-layered
 function composition $y=(f_K\circ f_{K-1}\circ \cdots f_1)(x)$. Here, $x$ are
 the inputs (e.g., images), $y$ are the observations (e.g., class labels).
@@ -463,7 +474,8 @@ $$\begin{aligned}
 \end{aligned}$$
 The {\color{red}red} terms are partial derivatives of the output of a layer
 with respect to its inputs, whereas the {\color{blue}blue} terms are partial
-derivatives of the output of a layer with respect to its parameters. 
+derivatives of the output of a layer with respect to its parameters. The
+additional terms that we need to compute are indicated by the \fbox{boxes}.
 
 The key insight of backpropagation is to reuse previously computed derivatives
 to avoid redundant calculations. When we've computed the partial derivatives
@@ -536,8 +548,9 @@ For other variables $x_i$, we apply the chain rule
     Pa(x_j)}\frac{\partial{f}}{\partial{x_j}}\frac{\partial{g_j}}{\partial{x_i}}
 \end{equation}
 where $Pa(x_j)$ is the set of parent nodes of $x_j$ in the computation graph.
-Equation \ref{eq:forward_pass} is the \underline{forward pass}, whereas
-\ref{eq:backward_pass} is the \underline{backward pass}.
+In other words, we apply the chain rule to any node for which $x_i$ is a
+parent, and so on. Equation \ref{eq:forward_pass} is the \underline{forward
+pass}, whereas \ref{eq:backward_pass} is the \underline{backward pass}.
 
 The automatic differentiation approach works whenever we have a function that
 can be expressed as a computation graph, where the elementary functions are
