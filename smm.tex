@@ -10,6 +10,165 @@
 \pagenumbering{arabic}
 \parindent 0pt
 
+\section{Numerical Computation}
+\subsection{Real numbers representation}
+\begin{theorem}[Base representation]
+    A non-zero real number in base $\beta\geq2$ can be uniquely expressed as:
+    $$x=\text{sign}(x)\cdot(d_1\beta^{-1}+d_2\beta^{-2}+\ldots)\cdot\beta^p=\text{sign}(x)\cdot
+    m\cdot\beta^p$$
+    Here, $\text{sign}(x)=1$ if $x>0$, $\text{sign}(x)=-1$ if $x<0$, $p$ is an
+    integer and the digits $d_1,d_2,d_3,\ldots$ satisfy the following
+    conditions:
+\end{theorem}
+\begin{itemize}
+    \item $0\leq d_i\leq\beta-1$
+    \item $d_1\neq0$
+\end{itemize}
+There are two ways to represent a number:
+\begin{itemize}
+    \item \textbf{Normalized scientific representation}:
+        $$x=\pm(0.d_1d_2d_3\ldots)\beta^p$$
+    \item \textbf{Mixed representation}: 
+        $$x=\pm d_1d_2d_3\ldots d_p.d_{p+1}d_{p+2}\ldots\quad p>0$$
+        $$x=\pm 0.0\ldots0d_1d_2\ldots \quad p>0$$
+\end{itemize}
+\begin{example}
+    $x=(12.751)_{10}=+(0.12751)\cdot10^2$ 
+\end{example}
+\begin{definition}[Finite numbers]
+    The set of finite numbers, denoted as $\mathcal{F}(\beta,t,L,U)$, consists
+    of the numbers expressed in base $\beta$ with $t$ digits, and the exponent
+    is constrained within the range $L$ to $U$. In this context, any floating
+    point number $x\in\mathcal{F}(\beta,t,L,U)$ has the form: 
+    $$\text{fl}(x)=\pm(d_1+\ldots+d_t)\beta^p\quad L\leq p\leq U$$
+    Here, $m=(d_1\ldots d_t)$ is called mantissa and 
+    each $d_i$ is an integer satisfying the condition: 
+    $$0\leq d_i<\beta\quad i=1,\ldots,t$$
+\end{definition}
+\begin{example}
+    $x=(12.\bar{3})_{10},\quad\mathcal{F}(10,5,-3,3),\quad \text{fl}(x)?$
+    $$0.12333\cdot10^2$$
+\end{example}
+This set is finite and discrete and its cardinality is given by:
+$$\#\mathcal{F}(\beta,t,L,U)=2(\beta-1)\beta^{t-1}(U-L+1)$$
+Within this set, the minimum value is given by:
+$$\min(\mathcal{F}(\beta,t,L,U))=\beta^{L-1}$$
+and the maximum value is given by:
+$$\max(\mathcal{F}(\beta,t,L,U))=\beta^U(1-\beta^{-t})$$
+it's worth noting that floating-point numbers are equally spaced only between
+successive powers of $\beta$. They have a higher density around 0, with
+density diminishing as they move further from 0.
+\begin{example}
+   \begin{center}
+       \includegraphics[width=\linewidth]{finite_numbers}
+   \end{center} 
+\end{example}
+Not all real numbers are representable exactly, so it's necessary to assign an
+approximate finite number using these two rules:
+\begin{itemize}
+    \item \textbf{Chop}: truncate the $\beta$ base representation of $x$ after
+        the $t$-st digit.
+    \item \textbf{Round to nearest}: $\text{fl}(x)$ is the nearest
+        floating-point to $x$. In case the real number is equally distant from
+        two consecutive finite numbers, we round to the even number (this is
+        called round to even)
+\end{itemize}
+Finite numbers are represented on computers using a standard denoted as \textbf{Standard IEEE}, 
+which enables code portability between different processors. There are two
+main specifications:
+\begin{itemize}
+    \item \textbf{Single Precision}: 32 bits, with 1 for the sign, 23 for the
+        mantissa, and 8 for the exponent.
+        \begin{center}
+            \includegraphics[width=\linewidth]{ieee_double}
+        \end{center}
+    \item \textbf{Double Precision}: 64 bits, with 1 for the sign, 52 for the
+        mantissa, and 11 for the exponent.
+        \begin{center}
+            \includegraphics[width=\linewidth]{ieee_double}
+        \end{center}
+\end{itemize}
+Since the computer's base is two, and for any non-zero number the first digit
+is always equal to 1, it is consider implicit and not stored. This allows for
+24 bits in the case of single precision and 53 bits for double precision.
+
+\begin{definition}[Machine Precision]
+    Let $\mathcal{F}(\beta,t,L,U)$ be a set of finite numbers, and the unit
+    roundoff (or machine precision), denoted by $\epsilon$, is defined as
+    follows:
+    $$
+    \epsilon=\begin{cases}
+        \beta^{1-t} & \text{With rounding by chopping}\\ 
+        \frac{1}{2}\beta^{1-t} & \text{With rounding to nearest}
+    \end{cases}
+    $$
+\end{definition}
+In the standard IEEE, where rounding to the nearest in the chosen rounding
+rule, the machine precision $\epsilon$ is given by:
+\begin{itemize}
+    \item $\epsilon_{\text{single}}\approx10^{-8}$
+    \item $\epsilon_{\text{double}}\approx10^{-16}$
+\end{itemize}
+\begin{theorem}
+    The maximum relative error in representing real number $x$ within range of
+    floating-point system is given by
+    $$\left\lvert \frac{\text{fl}(x)-x}{x} \right\rvert\leq\epsilon$$
+\end{theorem}
+The IEEE standard introduces special values to indicate two exceptional
+situations:
+\begin{itemize}
+    \item \texttt{Inf}, which stands for \textit{infinity} results from
+        dividing a finite number by zero, such as 1/0.
+    \item \texttt{NaN}, which stands for \textit{not a number} results from
+        undefined or indeterminate operations, such as 0/0.
+\end{itemize}
+These special values are implemented through reserved representations.
+\subsection{Finite arithmetic}
+Numerical result from computer program inherently contain errors,
+which can be categorized as follows:
+\begin{itemize}
+    \item \textbf{Measure errors}: due to the measure instrument.
+    \item \textbf{Algorithmic errors}: due to the individual operations within
+        the algorithmic process.
+    \item \textbf{Truncation errors}: when an infinite procedure is
+        approximated with a finite one.
+    \item \textbf{Inherent errors}: due to the finite representation of data.
+\end{itemize}
+Let $\tilde{x}$ be an approximation obtained through an algorithm for the true
+value $x$. The error can be measured using:
+\begin{itemize}
+    \item  \textbf{Absolute error}: $E_x=\tilde{x}-x$
+    \item  \textbf{Relative error}: $R_x=\frac{\tilde{x}-x}{x},\quad x\neq0$
+\end{itemize}
+\begin{definition}[Floating-point Operation]
+    For two numbers $x,y\in \mathcal{F}$ the operation is defined as 
+    $$x\tilde{\text{ op }}y=\text{fl}(x\text{ op }y)$$
+    This means that the firstly the operation is done in exact arithmetic, and
+    subsequently, the result is rounded to fit in the given finite set of
+    numbers.
+
+    The exact operation is done on a register situated near the processor,
+    equipped with additional bits.
+\end{definition}
+Each operation causes an error, which is given by:
+$$\left\lvert \frac{(x\tilde{\text{ op }}y)-(x\text{ op }y)}{x\text{ op }y}\right\rvert$$
+The addition and subtraction of two t-digit numbers can lead to a
+phenomenon known as \textbf{cancellation}. This one occurs when either (a) the
+two numbers significantly differ magnitude or (b) they have opposite sign
+while having similar magnitudes. Such occurrences may result in a loss of
+information, giving a risk of error propagation that could potentially
+invalidate the final result. 
+\begin{example}
+    $\mathcal{F}(10,6,L,U)$ \\
+   $x=0.147554326,\ \text{fl}(x)=0.147554$ \\
+   $y=-0.147251742,\ \text{fl}(y)=0.147525$ \\
+   $$x+y=0.147554326-0.1475251742=0.302584\times10^{-3}$$
+   $$x\tilde{+}y=0.147554-0.1475251=0.302000\times10^{-3}$$
+   $$\frac{(x\tilde{+}y)-(x+y)}{(x+y)}=\frac{0.302000\times10^3-0.302584\times10^{-3}}{0.302584\times10^{-3}}=0.2\times10^{-2}$$
+   Which is way higher than the
+   $\epsilon=\frac{1}{2}10^{1-6}=0.5\times10^{-5}$. 
+\end{example}
+\cleardoublepage
 \section{Linear Algebra Tools}
 This chapter introduces inner product to give geometric meaning to vectors and
 vector spaces, enabling calculations of length, distance, and angles.
