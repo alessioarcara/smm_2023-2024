@@ -11,6 +11,35 @@
 \parindent 0pt
 
 \section{Prerequisites}
+\subsection{Linear algebra}
+\begin{definition}[Linear independence]
+    A sequence of vectors $v_1,\ldots,v_k\in V$ is considered linear
+    independent if the linear combination $\alpha_1v_1+\ldots+\alpha_kv_k=0$
+    holds only when $\alpha_1=\ldots=\alpha_k=0$.
+\end{definition}
+\begin{definition}[Basis]
+    Let $V$ be a vector space of dimension $n$. A sequence of vectors
+    $\{v_1,v_2,\ldots,v_n\}$ is considered a basis of $V$ if any of the
+    following conditions are hold:
+    \begin{itemize}
+        \item It is linearly independent.
+        \item Any vector $v\in V$ can be written as a unique linear
+            combination: 
+            $$
+            \begin{aligned}
+                v&=\alpha_1v_1+\ldots+\alpha_nv_n\\
+                 &=\sum_{i=1}^{n}\alpha_iv_i
+            \end{aligned}
+            $$
+    \end{itemize}
+\end{definition}
+\begin{definition}[Null space]
+    For a matrix $A$, the kernel, also known as the null space, is defined as:
+    $$\text{Ker}(A)=\{x\in \mathbb{R}^n\ |\ Ax=0\}$$
+\end{definition}
+The null vector is always an element of the $\text{Ker}(A)$. If
+$\text{Ker}(A)=\{0\}$, then the matrix is non singular and viceversa.
+\subsection{Norms}
 \begin{definition}[Vector Norm]
     A vector norm is a function $\lVert \cdot\rVert:\mathbb{R}^n\to
     \mathbb{R}$ that assigns each vector $x$ a real value $\lVert x\rVert\in
@@ -226,11 +255,14 @@ invalidate the final result.
    $\epsilon=\frac{1}{2}10^{1-6}=0.5\times10^{-5}$. 
 \end{example}
 \cleardoublepage
-\cleardoublepage
 \section{Linear Algebra Tools}
-This chapter introduces inner product to give geometric meaning to vectors and
-vector spaces, enabling calculations of length, distance, and angles.
-
+This chapter introduces the dot product to give geometric meaning to vectors
+and vector spaces, enabling calculations of length, distance, and angles.
+\begin{definition}[Dot Product/Scalar Product]
+    The dot product, also known as the scalar product, is computed as the sum
+    of the product of corresponding coordinates between two vectors: 
+    $$\langle x,y\rangle=x^T\cdot y=\displaystyle\sum_{i=1}^{n}x_iy_i$$
+\end{definition}
 \begin{definition}[Symmetric Positive Definitive Matrix] 
     A symmetric matrix $A\in \mathbb{R}^{n\times n}$ that satisfies
     \begin{equation}\label{positive_definite_matrix}
@@ -248,17 +280,20 @@ having to check the definition explicitly:
     \item The eigenvalues of $A$ are real and positive.
 \end{enumerate}
 \subsection{Angles and Orthogonality}
+\begin{wrapfigure}{r}{0.2\linewidth}
+    \begin{center}
+        \includegraphics[width=0.9\linewidth]{vectors_angle}
+    \end{center}
+\end{wrapfigure}
 The angle $\omega$ between vectors $x$ and $y$ is computed as:
 $$\cos\omega=\frac{\langle x,y\rangle}{\lVert x\rVert_2 \lVert y\rVert_2}$$ 
-Here, $\langle x,y\rangle$ denotes the inner product between $x$ and $y$.
-
 This angle indicated the vectors' similarity in orientation. 
 \begin{definition}[Orthogonal vectors]
     Two vectors are orthogonal if $\langle x,y \rangle=0$. If additionally
     $\lVert x\rVert=1=\lVert y\rVert$, then $x$ and $y$ are orthonormal.
 \end{definition}
 \begin{definition}[Orthogonal matrix]
-    A square matrix is an orthogonal matrix if and only if \underline{its columns are
+    A square matrix is an orthogonal matrix iif \underline{its columns are
     orthonormal} so that 
     $$AA^T=I=A^TA$$
     which implies that 
@@ -269,6 +304,8 @@ orthogonal matrix $A$.
 $$\lVert Ax\rVert_2^2=\lVert x\rVert_2^2$$
 Moreover, the angle between any two vectors $x,y$ is also unchanged when
 transforming both of them using an orthogonal matrix $A$.
+$$\cos\omega=\frac{(Ax)^T(Ay)}{\lVert Ax\rVert \lVert
+Ay\rVert}=\frac{x^Ty}{\lVert x\rVert \lVert y\rVert}$$
 \begin{definition}[Orthonormal Basis]
     In an $n$-dimensional vector space $V$ with a basis set
     $\{b_1,\ldots,b_n\}$, if all the basis vectors are orthogonal to each
@@ -284,14 +321,13 @@ $V$ that are orthogonal to every vector in $U$.
 \begin{center}
     \includegraphics[width=0.6\linewidth]{images/orthogonal_complement}
 \end{center}
-\subsubsection{Orthogonal Projections}
 Projections are key linear transformations in machine learning and are
 particularly useful for handling high-dimensional data. Often, only a few
 dimensions in such data are essential for capturing the most relevant
 information. By projecting the original high-dimensional data onto a lower
 dimensional feature space, we can work more efficiently to learn about the
 dataset and extract significant patterns.
-\begin{definition}[Projection]
+\begin{definition}[Orthogonal projection]
     Let $V$ be a vector space and $U\subseteq V$ a subspace of $V$. A linear
     mapping $\pi:V\to U$ is called \textbf{projection} if it satisfies
     $\pi^2=\pi\circ\pi=\pi$.
@@ -362,7 +398,7 @@ considered: square linear systems ($m=n$) and the least squares problem
 \subsection{Square linear systems}
 \begin{proposition}
     The solution of a linear system $\underset{n\times n}Ax=\underset{n\times
-    1}b$ exists and is unique if and only if one of these conditions holds:
+    1}b$ exists and is unique iif one of these conditions holds:
     \begin{itemize}
         \item $A$ is non singular 
         \item $\text{rank}(A)=n$
@@ -909,7 +945,6 @@ f(x^*)=0$. Those points are stationary points for $f$.
     a strict local minimum for $f$.
 \end{definition}
 \subsection{Algorithm to compute the minimum}
-
 \paragraph{Iterative methods.} Given an initial vector $x_0\in \mathbb{R}^n$,
 it is possible to approximate a solution to a given optimization problem by
 applying iterative methods. In particular, by using these methods, one can
@@ -917,7 +952,6 @@ compute $x_{k+1}$ as follows:
 $$x_{k+1}=g(x_k)$$
 until convergence. In this case $g$ is an arbitrary function. Using these
 methods, $x_k\to x^*$ for $k\to\infty$, where $x^*$ is a stationary point.
-
 \paragraph{Descent methods} are iterative methods in which one can compute
 $x_{k+1}$ as follows:
 $$x_{k+1}=x_k+\alpha_kp_k$$
@@ -1177,7 +1211,7 @@ deduce the underlying processes that explain those observations.
    $$P(B|A)=\frac{\frac{3}{8}}{\frac{1}{2}}=\frac{3}{4}$$
 \end{example}
 \begin{definition}
-    Two events $A$ and $B$ are \underline{independent events} if and only if:
+    Two events $A$ and $B$ are \underline{independent events} iif:
     $$P(A\cap B)=P(A)\cdot P(B)$$
     and that means
     $$P(A|B)=P(A)\quad P(B|A)=P(B)$$
@@ -1572,11 +1606,11 @@ deterministic.
 We can interpret the \underline{angle $\theta$ between two r.v., $X$ and $Y$,
 as their correlation}:
 $$\cos\theta=\frac{\langle X,Y\rangle}{\lVert X\rVert \lVert
-Y\rVert}=\frac{\text{Cov}_{X,Y}[x,y]}{\sqrt{\mathbb{V}_X[x]\mathbb{V}_Y[y]}}$$
+\rVert}=\frac{\text{Cov}_{X,Y}[x,y]}{\sqrt{\mathbb{V}_X[x]\mathbb{V}_Y[y]}}$$
 
-Recall that two vectors are orthoganal if and only if:
+Recall that two vectors are orthogonal iif:
 $$X\perp Y\iff\langle X,Y\rangle=0$$
-Therefore, they are orthogonal if and only if $\text{Cov}_{X,Y}[x,y]=0$.
+Therefore, they are orthogonal iif $\text{Cov}_{X,Y}[x,y]=0$.
 \paragraph{Gaussian linearity.}
 For two independent r.v., $X,Y$, we have:
 $$
