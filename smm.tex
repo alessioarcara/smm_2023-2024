@@ -10,6 +10,63 @@
 \pagenumbering{arabic}
 \parindent 0pt
 
+\section{Prerequisites}
+\begin{definition}[Vector Norm]
+    A vector norm is a function $\lVert \cdot\rVert:\mathbb{R}^n\to
+    \mathbb{R}$ that assigns each vector $x$ a real value $\lVert x\rVert\in
+    \mathbb{R}$ (its length). To be considered a vector norm, this function
+    must satisfy the following properties:
+    \begin{itemize}
+       \item $\lVert x\rVert\geq 0$ and $\lVert x\rVert=0$
+           iif $x=0$
+       \item $\lVert x+y\rVert=\lVert x\rVert+ \lVert
+           y\rVert \quad y\in \mathbb{R}^n$
+       \item $\lVert \lambda x\rVert=\left\lvert
+           \lambda\right\rvert \lVert x\rVert \quad \lambda\in \mathbb{R}$
+    \end{itemize}
+\end{definition}
+The most used vector norms are:
+\begin{itemize}
+    \item \textbf{2-norm (Euclidean norm)}: $\lVert
+        x\rVert_2=\sqrt{\sum_{i=1}^{n}x_i^2}$
+    \item \textbf{1-norm (Manhattan norm)}: $\lVert x\rVert_1=\sum_{i=1}^{n}\left\lvert x_i\right\rvert$
+    \item \textbf{$\infty$-norm}: $\lVert x\rVert_{\infty}=\max_{1\leq i\leq
+        n}\left\lvert x_i\right\rvert$
+\end{itemize}
+\begin{center}
+    \includegraphics[width=0.75\linewidth]{l1_l2}
+\end{center}
+\begin{definition}[Matrix Norm]
+    A matrix norm is a function $\lVert \cdot\rVert :\mathbb{R}^{m\times n}\to
+    \mathbb{R}$ which assigns each matrix $A\in \mathbb{R}^{m\times n}$ a
+    real value $\lVert A\rVert\in \mathbb{R}$. To be considered a matrix norm,
+    this function must satisfy the following properties:
+    \begin{itemize}
+        \item $\lVert A\rVert\leq 0$ and $\lVert A\rVert =0$ iif $A=0$ 
+        \item $\lVert A+B\rVert=\lVert A\rVert+ \lVert
+            B\rVert \quad B\in \mathbb{R}^{m\times n}$
+        \item $\lVert \lambda A\rVert=\left\lvert
+           \lambda\right\rvert \lVert A\rVert \quad \lambda\in \mathbb{R}$
+    \end{itemize}
+\end{definition}
+The most used matrix norms are:
+\begin{itemize}
+    \item \textbf{Frobenius norm}: $\lVert
+        A\rVert_F=\sqrt{\sum_{i=1}^{m}\sum_{j=1}^{n}a_{ij}^2}$
+    \item \textbf{2-norm (Spectral norm)}: $\lVert A\rVert_2=\sqrt{\lambda_{\max}(A^TA)}$
+    \item \textbf{1-norm}: $\lVert A\rVert_1=\max_{1\leq j\leq
+        n}\sum_{i=1}^{m}\left\lvert a_{ij}\right\rvert$ (Sum along the columns
+        and take the maximum)
+\end{itemize}
+\begin{example}
+   $A=\begin{bmatrix}
+       0 & 1 \\ 
+       2 & 3
+   \end{bmatrix}$ 
+   $$\lVert A\rVert_F=\sqrt{0+1+4+9}=\sqrt{14}$$
+   $$\lVert A\rVert_1=\max\{2,4\}=4$$
+\end{example}
+\cleardoublepage
 \section{Numerical Computation}
 \subsection{Real numbers representation}
 \begin{theorem}[Base representation]
@@ -106,7 +163,7 @@ is always equal to 1, it is consider implicit and not stored. This allows for
 In the standard IEEE, where rounding to the nearest in the chosen rounding
 rule, the machine precision $\epsilon$ is given by:
 \begin{itemize}
-    \item $\epsilon_{\text{single}}\approx10^{-8}$
+    \item $\epsilon_{\text{single}}\approx10^{-7}$
     \item $\epsilon_{\text{double}}\approx10^{-16}$
 \end{itemize}
 \begin{theorem}
@@ -159,7 +216,7 @@ while having similar magnitudes. Such occurrences may result in a loss of
 information, giving a risk of error propagation that could potentially
 invalidate the final result. 
 \begin{example}
-    $\mathcal{F}(10,6,L,U)$ \\
+   $\mathcal{F}(10,6,L,U)$ \\
    $x=0.147554326,\ \text{fl}(x)=0.147554$ \\
    $y=-0.147251742,\ \text{fl}(y)=0.147525$ \\
    $$x+y=0.147554326-0.1475251742=0.302584\times10^{-3}$$
@@ -168,6 +225,7 @@ invalidate the final result.
    Which is way higher than the
    $\epsilon=\frac{1}{2}10^{1-6}=0.5\times10^{-5}$. 
 \end{example}
+\cleardoublepage
 \cleardoublepage
 \section{Linear Algebra Tools}
 This chapter introduces inner product to give geometric meaning to vectors and
@@ -293,14 +351,97 @@ can have multiple eigenvectors.
 This theorem states that eigenvectors of a matrix with $n$ distinct eigenvalues
 form a basis of $\mathbb{R}^n$.
 \cleardoublepage
-\section{Least Square Problem}
-Considering the problem 
-$$\underset{m\times n}{A}x=b$$
-with more rows than columns ($m>n$).
+\section{Linear systems}
+A linear system can be written as 
+$$\underset{(m\times n)}A\underset{(n\times1)}x=\underset{m\times1}b$$
+where $x$ represents the unknown solution while $b$ is a given vector.
 
-Finding an exact solution to this system, i.e. satisfying $Ax-b=0$ is
-impossible. However, we can seek an approximate solution $\tilde{x}$, such
-that $A\tilde{x}-b\approx0$.
+We are interested to find a solution to this linear system. Two cases are
+considered: square linear systems ($m=n$) and the least squares problem
+($m>n$). 
+\subsection{Square linear systems}
+\begin{proposition}
+    The solution of a linear system $\underset{n\times n}Ax=\underset{n\times
+    1}b$ exists and is unique if and only if one of these conditions holds:
+    \begin{itemize}
+        \item $A$ is non singular 
+        \item $\text{rank}(A)=n$
+        \item The system $Ax=0$ admits only the solutions $x=0$
+    \end{itemize}
+\end{proposition}
+The solution can be algebraically computed in the following way 
+$$Ax=b\implies A^{-1}Ax=A^{-1}\implies x=A^{-1}b$$
+However, this method can be computational expensive with a cost of
+$\mathcal{O}(n^3)$ operations.
+\subsubsection{LU factorization}
+We can solve the linear system $Ax=b$ by factorizing the matrix $A$ into the
+product of lower and upper triangular matrices, $LU$. This factorization
+allows us to solve the linear system through two triangular systems:
+$$L\underbrace{Ux}_{y}=b$$
+$$\begin{cases}
+    Ly=b & \text{(forward substitution algorithm)}\\
+    Ux=y & \text{(backward substitution algorithm)}
+\end{cases}$$
+\begin{center}
+    \includegraphics[width=0.75\linewidth]{factorization_lu}
+\end{center}
+The computational cost of both forward and backward substitution is
+$\mathcal{O}(n^2)$, whereas LU factorization is $\mathcal{O}(\frac{n^3}{3})$
+operations. Combining these steps, the overall complexity for solving a linear
+system using LU factorization is $\mathcal{O}(\frac{n^3}{3})+
+2\mathcal{O}(n^2)$. 
+
+\paragraph{Algorithmic error.} However, this algorithm may not be applicable
+if the principal minors of the matrix $A$ have determinants equal to zero.
+Moreover, this algorithm may amplify errors introduced during the finite
+representation of the matrix $A$ if the elements in the matrices $L$ and $U$
+are larger. To mitigate these issues, a modification is introduced known as
+the LU factorization with maximum pivot permutation.
+$$PAx=Pb,\quad PA=LU$$
+$$\begin{cases}
+    Ly=Pb & \text{(forward substitution algorithm)}\\
+    Ux=y & \text{(backward substitution algorithm)}
+\end{cases}
+$$
+Selecting the maximum pivot when swapping the rows in the permutation step
+helps ensures that the elements in the lower triangular matrix $L$ are all
+$\leq1$. However, this property may not hold to the upper triangular matrix
+$U$, which could still contain larger elements.
+\subsection{Conditioning of the problem}
+Remind that inherent errors are due to the errors in the data representation.
+They do not depend on the algorithm used for computing the result. Really, the
+analysis of inherent errors is performed by supposing to use exact arithmetic
+to compute the result. A problem is well-conditioned if the error in the
+results aligns in magnitude with the error in data representation.
+
+In our specific problem is ill-conditioned when
+$$\lVert \Delta x\rVert>>\lVert \Delta A\rVert+ \lVert \Delta b\rVert$$
+\begin{center}
+    \includegraphics[width=0.75\linewidth]{inherent_error}
+\end{center}
+
+By doing a backward error analysis and introducing a perturbation to either
+the matrix $A$ and the vector $b$, we can observe that the condition of the
+problem is influenced by the constant $K$. Specially:
+$$\frac{\lVert \Delta x\rVert}{\lVert x\rVert}\leq \lVert A\rVert^{-1} \lVert
+A\rVert \frac{\lVert \Delta b\rVert}{\lVert b\rVert}=K(A)\frac{\lVert \Delta
+b\rVert}{\lVert b\rVert}$$
+\begin{definition}[Condition number]
+    The condition number of a matrix $A\in \mathbb{R}^{n\times n}$ is defined
+    as 
+    $$K(A)=\lVert A\rVert \lVert A\rVert^{-1}$$
+    Note that $K(A)\geq1$.
+\end{definition}
+We can say that a well-conditioned problem is a system where $K(A)$ is small,
+while an ill-conditioned system is a system where $K(A)$ is large.
+
+Typically, the condition number is calculated before solving the system. A
+matrix $A$ is near a singular matrix when $K(A)$ is significantly large. To
+mitigate this, regularization techniques can be used to reduce $K(A)$.
+\subsection{Least squares problem}
+If $A$ has size with $m>n$, finding an exact solution to this system, i.a
+satisfying $Ax-b=0$ is impossible. However, we can seek an approximate
+solution $\tilde{x}$, such that $A\tilde{x}-b\approx0$.
 
 To quantify the closeness of the vector $A\tilde{x}-b$, also called residual
 , to zero, we use the 2-norm. Thus,
@@ -311,13 +452,13 @@ $$\tilde{x}=\argmin_{x\in \mathbb{R}^n}\lVert Ax-b\rVert_2^2$$
 
 Considering the $r=\text{rank}(A)$ we have two possibilities:
 \begin{enumerate}
-    \item $r=n\to$ The least square problem has a unique solution $\forall b\in
+    \item $r=n\to$ The least square problem has a \underline{unique} solution $\forall b\in
         \mathbb{R}^m$.
 
         By solving the so-called \textbf{normal equations}
         $$A^TAx=A^Tb$$
-        where $A^TA$ is $n\times n$ symmetric and positive definite matrix if
-        $\text{rank}(A)=n$ then the matrix is non singular. This can be
+        where $A^TA$ is $n\times n$ symmetric and positive definite matrix.
+        Since $\text{rank}(A)=n$, then the matrix is non singular. This can be
         computed efficiently using the direct method \textsc{Cholesky
         decomposition}.
 
@@ -340,7 +481,7 @@ Considering the $r=\text{rank}(A)$ we have two possibilities:
             \end{cases}
         \end{aligned}
         $$
-    \item $r<n\to$ The least square problem has infinite solutions $\forall
+    \item $r<n\to$ The least square problem has \underline{infinite} solutions $\forall
         b\in \mathbb{R}^m$.
 
         Among the infinite possible solutions $S=\{x\in\mathbb{R}^n\ |\
