@@ -1,6 +1,7 @@
 
 % --- Layout e formattazione generale ---
 \usepackage[a4paper, landscape, twocolumn, margin=1.5cm, columnsep=1cm]{geometry}
+\usepackage[hidelinks]{hyperref}
 
 % --- Matematica ---
 \usepackage{amsthm}
@@ -26,6 +27,10 @@
     frametitlefont=\sffamily\bfseries\color{white},
     frametitle={Example},
 ]{example}
+\newmdenv[%
+    backgroundcolor=yellow,
+    hidealllines=true
+]{recap}
 
 % --- Grafica e disegni ---
 \usepackage{graphicx}

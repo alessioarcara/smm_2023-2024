@@ -1,7 +1,15 @@
 \documentclass{article}
 \input{settings.tex}
 
+\author{Alessio Arcara}
 \begin{document}
+\begin{titlepage}
+    \vspace*{\fill}
+   \centering
+   \Huge Statistical and Mathematical Methods for Artificial Intelligence\\
+   \Large Alessio Arcara
+    \vspace*{\fill}
+\end{titlepage}
 \pagenumbering{gobble}
 
 \tableofcontents
@@ -82,7 +90,8 @@ The most used matrix norms are:
 \begin{itemize}
     \item \textbf{Frobenius norm}: $\lVert
         A\rVert_F=\sqrt{\sum_{i=1}^{m}\sum_{j=1}^{n}a_{ij}^2}$
-    \item \textbf{2-norm (Spectral norm)}: $\lVert A\rVert_2=\sqrt{\lambda_{\max}(A^TA)}$
+    \item \textbf{2-norm (Spectral norm)}: $\lVert A\rVert_2=\sqrt{\left\lvert
+        \lambda\right\rvert_{\max}(A^TA)}$
     \item \textbf{1-norm}: $\lVert A\rVert_1=\max_{1\leq j\leq
         n}\sum_{i=1}^{m}\left\lvert a_{ij}\right\rvert$ (Sum along the columns
         and take the maximum)
@@ -344,7 +353,7 @@ is the closest point necessarily in $U$ to $x$.
 Eigenanalysis helps us understand linear transformations represented by a
 matrix $A$. Eigenvectors $x$ are special vectors that only get scaled, not
 rotated, when multiplied by $A$. The scaling factor is the eigenvalue
-$\lambda$, which indicated how much $x$ is stretched or shrunk. $\lambda$ can
+$\lambda$, which indicates how much $x$ is stretched or shrunk. $\lambda$ can
 also be zero.
 \begin{definition}[Eigenvalue and Eigenvector]
     Let $A\in \mathbb{R}^{n\times n}$ be a square matrix. Then $\lambda\in
@@ -382,10 +391,223 @@ can have multiple eigenvectors.
 \begin{theorem}
     The eigenvectors $x_1,\ldots,x_n$ of a matrix $A\in \mathbb{R}^{n\times
     n}$ with $n$ distinct eigenvalues $\lambda_1,\ldots,\lambda_n$ are
-    linearly independent.
+    linearly independent (one eigenvector for each eigenvalue).
 \end{theorem}
 This theorem states that eigenvectors of a matrix with $n$ distinct eigenvalues
 form a basis of $\mathbb{R}^n$.
+\begin{definition}
+    A square matrix $A\in \mathbb{R}^{n\times n}$ is \textbf{defective} if it
+    possesses fewer than $n$ linearly independent eigenvectors.
+\end{definition}
+A defective matrix cannot have $n$ distinct eigenvalues, as distinct
+eigenvalues have linearly independent eigenvectors.
+\subsection{Eigendecomposition}
+\begin{theorem}[Spectral theorem]
+    If $A\in \mathbb{R}^{n\times n}$ is symmetric, there exists an orthonormal
+    basis of $\mathbb{R}^n$ of eigenvectors of $A$, and each eigenvalue is
+    real.
+\end{theorem}
+\begin{definition}[Similarity]
+    Two matrices $A,B\in \mathbb{R}^{n\times n}$ are \textbf{similar} if there
+    exists a matrix $S\in \mathbb{R}^{n\times n}$ with $B=S^{-1}AS$.
+\end{definition}
+Two similar matrices have the same eigenvalues, even though they will have
+different eigenvectors.
+\begin{definition}[Diagonalizable]
+    A matrix $A\in \mathbb{R}^{n\times n}$ is diagonalizable if it is similar
+    to a diagonal matrix $\begin{bmatrix}
+        d_1 & & \\ 
+            & \ddots & \\ 
+            & & d_n
+    \end{bmatrix}$, i.e., there exists an invertible matrix $P\in
+    \mathbb{R}^{n\times n}$ such that $D=P^{-1}AP$.
+\end{definition}
+We can see that diagonalizing a matrix $A\in \mathbb{R}^{n\times n}$ is a way
+of expressing the same linear mapping but in another basis constituted of the
+eigenvectors of $A$.
+
+The eigenvalues of a similar matrix remain the same, and computing the
+eigenvalues of a diagonal matrix is a straightforward, as they are simply the
+elements on the diagonal.
+\begin{theorem}[Eigendecomposition]
+    A square matrix $A\in \mathbb{R}^{n\times n}$ can be factored into 
+    $$A=PDP^{-1}$$
+    where $P\in \mathbb{R}^{n\times n}$ be a matrix whose columns are the
+    eigenvectors of $A$, and $D$ is the diagonal matrix whose diagonal entries
+    contains the eigenvalues of $A$.
+\end{theorem}
+Let $A$ be the transformation matrix of a linear mapping. We can interpret the
+eigendecomposition of a matrix as sequential transformations: 
+\begin{itemize}
+    \item $P^{-1}$ performs a basis change into the eigenbasis
+        (\textit{domain});
+    \item The diagonal $D$ scales the vectors along these axes by the
+        eigenvalues (\textit{mapping from domain to codomain});
+    \item $P$ transforms these scaled vectors back into the previous basis
+        (\textit{codomain}).
+\end{itemize}
+Only non-defective matrices can be diagonalized and that columns of $P$ are
+the $n$ eigenvectors of $A$.
+\begin{theorem}
+    A symmetric matrix $A\in \mathbb{R}^{n\times n}$ can always be orthogonal
+    diagonalizable by the orthogonal matrix representing the orthonormal
+    basis. Therefore, the eigendecomposition can be rewritten as follows:
+    $$A=PDP^T$$
+\end{theorem}
+\begin{center}
+    \includegraphics[width=0.8\linewidth]{eigendecomposition}
+\end{center}
+\begin{recap}
+    \textbf{Procedure (1)}
+    \begin{itemize}
+        \item Calculate the eigenvalues of matrix A.
+        \item Identify a basis for each eigenspace corresponding to the computed
+            eigenvalues. 
+        \item Combine the bases of individual eigenspaces to obtain the basis
+            $B$.
+        \item If the basis $B$ consists of $n$ linearly independent eigenvectors,
+            then the matrix $A$ is diagonalizable:
+            \begin{itemize}
+                \item To determine if the matrix $A$ is orthonormal
+                    diagonalizable, we need to verify the orthogonality
+                    between pairs of eigenvectors from distinct eigen-spaces:
+                    \begin{itemize}
+                        \item If the eigenvectors correspond to different eigenvalues,
+                            they are already orthogonal.
+                        \item If not, compute an orthogonal basis B.
+                    \end{itemize}
+                \item Normalize each vector in the orthogonal basis to create an orthonormal
+                    basis.
+            \end{itemize}
+        \item Otherwise the matrix $A$ is defective and non-diagonalizable.
+    \end{itemize}
+\end{recap}
+\subsection{Singular Value Decomposition}
+SVD, in contrast to eigendecomposition, is applicable to matrices of any
+shape and \underline{always} exists for any matrix.
+\begin{theorem}[Full SVD]
+    Let $\underset{m\times n}A$ be a rectangular matrix of matrix of rank
+    $r\in[0,\min(m,n)]$. The SVD of $A$ is a decomposition of the form
+    \begin{center}
+        \includegraphics[width=0.75\linewidth]{svd}
+    \end{center}
+    with an orthogonal matrix $\underset{m\times m}U$ whose $u_i$ are called
+    \textbf{left singular vectors}, an orthogonal matrix $\underset{n\times
+    n}V$ whose $v_j$ are called \textbf{right singular vectors}, and a matrix
+    $\underset{m\times n}\Sigma$ of the form:
+    $$
+    \begin{aligned}
+        \Sigma&=\begin{bmatrix}
+            \sigma_1 & 0 & 0 \\ 
+            0 & \ddots & 0 \\ 
+            0 & 0 & \sigma_n \\ 
+            0 & \ldots & 0 \\ 
+            \vdots & & \vdots \\ 
+            0 & \ldots & 0
+        \end{bmatrix}\quad (m<n)&
+        \Sigma&=\begin{bmatrix}
+            \sigma_1 & 0 & 0 & 0 & \ldots & 0 \\ 
+            0 & \ddots & 0 & 0 & & 0 \\ 
+            0 & 0 & \sigma_m & 0 & \ldots & 0 
+        \end{bmatrix}\quad (n>m)
+    \end{aligned}
+    $$
+    where $\Sigma_{ii}=\sigma_i\geq0$ and $\Sigma_{ij}=0,\ i\neq j$.
+    These $\sigma_i$ are called \textbf{singular values} and are ordered,
+    i.e., $\sigma_1\geq\sigma_2\geq\ldots\geq\sigma_r$.
+\end{theorem}
+Since the eigenvalue decomposition and the SVD for symmetric matrices are the
+same (following from the spectral theorem), and because $A^TA$ is symmetric
+positive definite, we can always orthogonal diagonalize it and obtain 
+$$A^TA=(PDP^T)^T(PDP^T)$$
+Using the property $(AB)^T=B^TA^T$, we can simplify
+$$=PD^TP^TPDP^T$$
+Therefore, with $P^TP=I$ we obtain 
+$$=PD^TDP=P\begin{bmatrix}
+    \lambda_1^2 & 0 & 0 \\ 
+    0 & \ddots & 0 \\ 
+    0 & 0 & \lambda_n^2
+\end{bmatrix}P^T$$
+This allows us to identify the right-singular vectors $P=V$ and the singular
+values $\sigma_i=\sqrt{\lambda_i^2}$. We can obtain the left-singular values
+by applying the same steps to $AA^T$. Alternatively, we can use the
+\textbf{singular value equation}a:
+$$Av_i=\sigma_iu_i\quad i=1,\ldots,r$$
+$$u_i=\frac{Av_i}{\sigma_i}\quad i=1,\ldots,r$$
+\begin{recap}
+    \textbf{Procedure (2)}
+    \begin{itemize}
+        \item Calculate right-singular vectors as the eigenbasis using the
+            procedure (1).
+        \item Calculate singular-value matrix as the square roots of the
+            nonzero eigenvalues of $A^TA$ plus zero-padding to have the same
+            shape as $A$.
+        \item Calculate left-singular vectors as the normalized image of the
+            right singular vectors using the singular-value equation.
+    \end{itemize}
+\end{recap}
+Some key differences between SVD and eigendecomposition are: 
+\begin{itemize}
+    \item SVD allows different dimensions in the domain and codomain.
+    \item In the SVD, the matrices $U$ and $V$ contain orthonormal vectors,
+        implying rotations. This contrast with eigendecomposition, where the
+        vectors in matrix $P$ might not be orthogonal, leading to a more
+        complex basis change.
+    \item The diagonal matrix in SVD has real and non-negative entries.
+\end{itemize}
+\begin{theorem}\label{theo:spectral_norm_A}
+   The spectral norm of $A$ is its largest singular value $\sigma_1$.
+\end{theorem}
+\begin{proposition}
+    If the $\lambda_1,\ldots,\lambda_n$ are the eigenvalues of $A$, then
+    $\frac{1}{\lambda_1},\ldots,\frac{1}{\lambda_n}$ are the eigenvalues of
+    $A^{-1}$.
+\end{proposition}
+\begin{proposition}\label{theo:spectral_norm_inverse_A}
+    The spectral norm of $A^{-1}$ is its largest singular value
+    $\frac{1}{\sigma_n}$.
+\end{proposition}
+\begin{definition}[Truncated SVD]
+    If we define \textbf{dyads} as the rank-1 matrix $A_i$ given by
+    $$\underset{m\times n}{A_i}=u_i,v_i^T\quad
+    \text{with }\underset{m\times1}{u_i},\underset{n\times1}{v_i}$$ then a
+    matrix $A$ of rank $r$ can be expressed as a sum of rank-1 matrices $A_i$
+    such that 
+    $$A=\sum_{i=1}^{r}\sigma_iA_i$$
+    If we do not run the sum until $r$ but only up to an intermediate value
+    $k<r$, we obtain a \textbf{k-rank approximation} of $A$
+    $$\hat{A}(k)=\sum_{i=1}^{k}\sigma_iA_i$$
+\end{definition}
+To memorize the $\hat{A}(k)$, we need $k(1+m+n)$ values compared to the $mn$
+values required for the full matrix $A$. The importance of each dyad is
+characterized by its corresponding singular value $\sigma_i$. Therefore, the
+initial dyads contribute more to the added information, with this contribution
+diminishing as the index $i$ increases.
+\begin{center}
+    \includegraphics[width=\linewidth]{A_i}
+\end{center}
+\begin{center}
+    \includegraphics[width=\linewidth]{A_k}
+\end{center}
+\begin{theorem}[Eckart-Young Theorem]
+    Consider a matrix $\underset{m\times n}A$ of rank $r$ and let
+    $\underset{m\times n}B$ be a matrix of rank $k$. For any $k\leq r$ with
+    $\hat{A}(k)=\sum_{i=1}^{k}\sigma_iu_iv_i^T$ it holds that 
+    $$
+    \begin{aligned}
+        \hat{A}(k)&=\argmin_{\text{rk}(B)k}\lVert A-B\rVert_2\\
+        \lVert A-\hat{A}(k)\rVert_2&=\sigma_{k+1}
+    \end{aligned}
+    $$
+\end{theorem}
+The theorem states that the k-rank approximation obtained with SVD is the one
+that minimizes the distance from $A$ among all other k-rank approximation
+matrices. That distance $A-\hat{A}(k)=\sum_{i=k+1}^{r}\sigma_iu_iv_i^T$, as
+per theorem \ref{theo:spectral_norm_A}, is immediately obtained by
+$\sigma_{k+1}$.
+\begin{center}
+    \includegraphics[width=0.5\linewidth]{A_k_distance} 
+\end{center}
 \cleardoublepage
 \section{Linear systems}
 A linear system can be written as 
@@ -474,6 +696,12 @@ while an ill-conditioned system is a system where $K(A)$ is large.
 Typically, the condition number is calculated before solving the system. A
 matrix $A$ is near a singular matrix when $K(A)$ is significantly large. To
 mitigate this, regularization techniques can be used to reduce $K(A)$.
+\begin{proposition}
+    Using theorem~\ref{theo:spectral_norm_A} and
+    proposition~\ref{theo:spectral_norm_inverse_A}, we express the condition
+    number using 2-norm as: 
+    $$K_2(A)=\frac{\sigma_1}{\sigma_n}$$
+\end{proposition}
 \subsection{Least squares problem}
 If $A$ has size with $m>n$, finding an exact solution to this system, i.a
 satisfying $Ax-b=0$ is impossible. However, we can seek an approximate
